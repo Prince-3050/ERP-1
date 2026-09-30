@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSI Ewart WCC – ERP System</title>
+<!-- ============================================================
+     CSS: Variables, Reset, Components
+============================================================ -->
+<style>
+/* ── CSS Custom Properties ─────────────────────────────────── */
+:root {
+  --primary:       #7B1C2E;
+  --primary-dark:  #5a1421;
+  --primary-light: #a62540;
+  --accent:        #C9922A;
+  --accent-light:  #e0ac4a;
+  --navy:          #1A2A4A;
+  --navy-light:    #243a60;
+  --success:       #2e7d32;
+  --warning:       #e65100;
+  --danger:        #b71c1c;
+  --info:          #0277bd;
+
+  --bg:            #000000;
+  --bg-card:       #111111;
+  --bg-sidebar:    #0a0a0a;
+  --text:          #e8e8f0;
+  --text-muted:    #9090a8;
+  --text-light:    #ffffff;
+  --border:        #2a2a2a;
+  --shadow:        0 2px 12px rgba(0,0,0,.50);
+  --shadow-lg:     0 8px 32px rgba(0,0,0,.70);
+  --radius:        10px;
+  --radius-sm:     6px;
+  --sidebar-w:     250px;
+  --topbar-h:      62px;
+  --transition:    .22s ease;
+  --font:          'Segoe UI', system-ui, sans-serif;
+}
+[data-theme="dark"] {
+  --bg:          #12131a;
+  --bg-card:     #1e1f2b;
+  --bg-sidebar:  #0d0e18;
+  --text:        #e8e8f0;
+  --text-muted:  #9090a8;
+  --border:      #2e2f42;
+  --shadow:      0 2px 12px rgba(0,0,0,.35);
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);transition:background var(--transition),color var(--transition);min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+table{border-collapse:collapse;width:100%}
+img{max-width:100%}
+ul{list-style:none}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ── Login Page ─────────────────────────────────────────────── */
+#login-page{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--primary) 60%,var(--accent) 100%);
+  padding:20px;
+}
+.login-card{
+  background:var(--bg-card);border-radius:18px;box-shadow:var(--shadow-lg);
+  width:100%;max-width:420px;overflow:hidden;
+}
+.login-header{
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:#fff;text-align:center;padding:32px 28px 24px;
+}
+.college-logo{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;letter-spacing:1px;color:#fff;
+  margin:0 auto 14px;
+}
+.login-header h1{font-size:17px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.login-header p{font-size:12px;opacity:.82;font-style:italic}
+.login-body{padding:28px}
+.role-tabs{display:flex;gap:6px;margin-bottom:22px}
+.role-tab{
+  flex:1;padding:9px 4px;border:2px solid var(--border);background:transparent;
+  border-radius:var(--radius-sm);font-size:13px;font-weight:600;color:var(--text-muted);
+  transition:all var(--transition);
+}
+.role-tab.active{border-color:var(--primary);background:var(--primary);color:#fff}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.input-wrap{position:relative}
+.input-wrap input,.input-wrap select{
+  width:100%;padding:10px 40px 10px 14px;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--bg);color:var(--text);
+  font-size:14px;transition:border-color var(--transition);outline:none;
+}
+.input-wrap input:focus,.input-wrap select:focus{border-color:var(--primary)}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text-muted);font-size:16px;padding:2px;
+}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:var(--radius-sm);font-size:14px;
+  font-weight:600;cursor:pointer;transition:all var(--transition);outline:none;
+}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:var(--accent-light)}
+.btn-outline{background:transparent;border:1.5px solid var(--primary);color:var(--primary)}
+.btn-outline:hover{background:var(--primary);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{filter:brightness(1.1)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{filter:brightness(1.1)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-full{width:100%}
+.btn-icon{padding:7px;width:34px;height:34px;border-radius:var(--radius-sm)}
+.form-error{color:var(--danger);font-size:12px;margin-top:5px}
+.login-footer{margin-top:16px;text-align:center;font-size:12px;color:var(--text-muted)}
+.demo-creds{margin-top:14px;border:1.5px dashed var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.demo-creds-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px;background:var(--bg);cursor:pointer;font-size:12px;font-weight:600;
+  color:var(--text-muted);
+}
+.demo-creds-body{padding:10px 12px;font-size:12px;color:var(--text-muted);line-height:1.9;display:none}
+.demo-creds-body.open{display:block}
+.demo-creds-body code{background:var(--border);padding:1px 5px;border-radius:3px;font-size:11px}
+
+/* ── App Shell ──────────────────────────────────────────────── */
+#app{display:none;height:100vh;overflow:hidden;flex-direction:column}
+#app.visible{display:flex}
+
+/* ── Top Bar ──────────────────────────────────────────────────*/
+.topbar{
+  height:var(--topbar-h);background:var(--primary);color:#fff;
+  display:flex;align-items:center;padding:0 18px;gap:12px;
+  flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:100;
+}
+.topbar-burger{background:none;border:none;color:#fff;font-size:22px;padding:4px 8px;display:none}
+.topbar-logo{
+  width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.5);
+  background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:#fff;letter-spacing:.5px;flex-shrink:0;
+}
+.topbar-title{font-size:15px;font-weight:700;flex:1;line-height:1.2}
+.topbar-title span{display:block;font-size:11px;font-weight:400;opacity:.75}
+.topbar-user{display:flex;align-items:center;gap:10px;font-size:13px}
+.role-badge{
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.role-badge.admin{background:#c9922a;color:#fff}
+.role-badge.staff{background:#0277bd;color:#fff}
+.role-badge.student{background:#2e7d32;color:#fff}
+.theme-toggle{background:none;border:none;color:#fff;font-size:18px;padding:4px}
+
+/* ── Main Layout ────────────────────────────────────────────── */
+.layout{display:flex;flex:1;overflow:hidden}
+.sidebar{
+  width:var(--sidebar-w);background:var(--bg-sidebar);color:#fff;
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;
+  transition:transform var(--transition);z-index:90;
+}
+.sidebar-nav{flex:1;padding:12px 0}
+.nav-section{padding:6px 16px 4px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;opacity:.5;margin-top:8px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 18px;
+  cursor:pointer;transition:all var(--transition);font-size:13.5px;
+  color:rgba(255,255,255,.75);border-left:3px solid transparent;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(201,146,42,.18);border-left-color:var(--accent);color:var(--accent-light)}
+.nav-item .icon{font-size:16px;width:20px;text-align:center}
+.sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;opacity:.5}
+
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+
+/* ── Cards & Stats ──────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:20px 18px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;
+  border-top:4px solid var(--primary);
+}
+.stat-card.accent{border-top-color:var(--accent)}
+.stat-card.success{border-top-color:var(--success)}
+.stat-card.info{border-top-color:var(--info)}
+.stat-card.warning{border-top-color:var(--warning)}
+.stat-icon{font-size:28px}
+.stat-value{font-size:28px;font-weight:800;color:var(--primary)}
+.stat-label{font-size:12px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+.card{background:var(--bg-card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:20px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:14px;color:var(--primary);display:flex;align-items:center;gap:8px}
+
+/* ── Tables ─────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+.table-wrap table th,.table-wrap table td{padding:11px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid var(--border)}
+.table-wrap table th{background:var(--primary);color:#fff;font-weight:600;white-space:nowrap}
+.table-wrap table tr:last-child td{border-bottom:none}
+.table-wrap table tbody tr:hover{background:rgba(123,28,46,.05)}
+.table-actions{display:flex;gap:5px;flex-wrap:wrap}
+.empty-state{text-align:center;padding:40px;color:var(--text-muted)}
+.empty-state .empty-icon{font-size:40px;margin-bottom:10px}
+
+/* ── Search & Filters ───────────────────────────────────────── */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.search-input{
+  padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);color:var(--text);font-size:13px;flex:1;min-width:200px;outline:none;
+}
+.search-input:focus{border-color:var(--primary)}
+.filter-select{
+  padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);color:var(--text);font-size:13px;outline:none;
+}
+
+/* ── Modals ─────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--bg-card);border-radius:var(--radius);width:100%;max-width:500px;
+  box-shadow:var(--shadow-lg);max-height:90vh;overflow-y:auto;
+}
+.modal-lg{max-width:700px}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+}
+.modal-header h3{font-size:16px;font-weight:700;color:var(--primary)}
+.modal-close{background:none;border:none;font-size:22px;color:var(--text-muted);cursor:pointer;line-height:1}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* ── Forms ──────────────────────────────────────────────────── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group-inline{margin-bottom:14px}
+.form-group-inline label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text-muted)}
+.form-group-inline input,.form-group-inline select,.form-group-inline textarea{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg);color:var(--text);font-size:13px;outline:none;transition:border-color var(--transition);
+}
+.form-group-inline input:focus,.form-group-inline select:focus,.form-group-inline textarea:focus{border-color:var(--primary)}
+.form-group-inline textarea{resize:vertical;min-height:80px}
+
+/* ── Toasts ─────────────────────────────────────────────────── */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  padding:12px 18px;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;
+  animation:slideIn .3s ease;min-width:200px;max-width:320px;
+}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+.toast.warning{background:var(--warning)}
+.toast.info{background:var(--info)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateX(100%)}}
+.toast.out{animation:fadeOut .3s ease forwards}
+
+/* ── Badge ──────────────────────────────────────────────────── */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-success{background:#e8f5e9;color:#2e7d32}
+.badge-danger{background:#ffebee;color:#b71c1c}
+.badge-warning{background:#fff3e0;color:#e65100}
+.badge-info{background:#e3f2fd;color:#0277bd}
+.badge-muted{background:#f0f0f0;color:#666}
+
+/* ── Chart ───────────────────────────────────────────────────── */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;padding:8px 0}
+.chart-bar-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.chart-bar{width:100%;background:var(--primary);border-radius:4px 4px 0 0;min-height:4px;position:relative;transition:height .5s ease}
+.chart-bar:hover::after{content:attr(data-val);position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:#333;color:#fff;font-size:10px;padding:2px 6px;border-radius:3px;white-space:nowrap}
+.chart-label{font-size:9px;color:var(--text-muted);text-align:center;word-break:break-word}
+
+/* ── Calendar ──────────────────────────────────────────────── */
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day-name{text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding:4px}
+.cal-day{
+  text-align:center;padding:7px 2px;border-radius:4px;font-size:12px;cursor:default;
+}
+.cal-day.present{background:#c8e6c9;color:#1b5e20;font-weight:700}
+.cal-day.absent{background:#ffcdd2;color:#b71c1c;font-weight:700}
+.cal-day.weekend{background:var(--border);color:var(--text-muted)}
+.cal-day.other-month{opacity:.35}
+.cal-day.today{box-shadow:0 0 0 2px var(--accent)}
+
+/* ── Attendance Mark ──────────────────────────────────────── */
+.att-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:13px}
+.att-row:last-child{border-bottom:none}
+.att-name{flex:1}
+.att-toggle{display:flex;gap:4px}
+.att-btn{padding:5px 12px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:700;background:transparent;color:var(--text-muted)}
+.att-btn.present-active{background:#c8e6c9;border-color:#2e7d32;color:#1b5e20}
+.att-btn.absent-active{background:#ffcdd2;border-color:#b71c1c;color:#b71c1c}
+
+/* ── Progress Bar ──────────────────────────────────────────── */
+.progress-wrap{background:var(--border);border-radius:20px;height:8px;overflow:hidden;margin-top:6px}
+.progress-bar{height:100%;border-radius:20px;background:var(--primary);transition:width .5s ease}
+.progress-bar.good{background:var(--success)}
+.progress-bar.warn{background:var(--warning)}
+.progress-bar.bad{background:var(--danger)}
+
+/* ── Timetable Grid ────────────────────────────────────────── */
+.tt-grid{display:grid;grid-template-columns:80px repeat(5,1fr);gap:4px}
+.tt-head{background:var(--primary);color:#fff;text-align:center;padding:8px 4px;font-size:11px;font-weight:700;border-radius:4px}
+.tt-time{background:var(--border);text-align:center;padding:8px 4px;font-size:11px;color:var(--text-muted);border-radius:4px}
+.tt-cell{background:var(--bg-card);border:1.5px solid var(--border);border-radius:4px;padding:6px 5px;font-size:11px;text-align:center;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tt-cell.filled{background:#f3e5f5;border-color:var(--primary)}
+.tt-subj{font-weight:700;color:var(--primary);font-size:11px}
+.tt-staff{color:var(--text-muted);font-size:10px}
+
+/* ── Fee Receipt ──────────────────────────────────────────── */
+.receipt{border:2px solid var(--border);border-radius:var(--radius);padding:24px;font-size:13px}
+.receipt-header{text-align:center;margin-bottom:16px;border-bottom:2px solid var(--primary);padding-bottom:12px}
+.receipt-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border)}
+.receipt-total{font-weight:700;color:var(--primary);font-size:15px}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media(max-width:768px){
+  .topbar-burger{display:block}
+  .sidebar{position:fixed;top:var(--topbar-h);left:0;bottom:0;transform:translateX(-100%);height:calc(100vh - var(--topbar-h))}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:89;display:none}
+  .sidebar-overlay.open{display:block}
+  .main{padding:14px}
+  .form-row{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .topbar-title{font-size:13px}
+  .topbar-user .name{display:none}
+  .tt-grid{grid-template-columns:60px repeat(5,1fr);font-size:9px}
+}
+@media(max-width:420px){
+  .stat-grid{grid-template-columns:1fr}
+  .topbar-title h2{font-size:12px}
+}
+
+/* ── Misc ──────────────────────────────────────────────────── */
+.section-title{font-size:20px;font-weight:800;color:var(--primary);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.warning-box{background:#fff3e0;border-left:4px solid var(--warning);padding:10px 14px;border-radius:4px;font-size:13px;color:var(--warning);margin-bottom:14px}
+.info-box{background:#e3f2fd;border-left:4px solid var(--info);padding:10px 14px;border-radius:4px;font-size:13px;color:var(--info);margin-bottom:14px}
+.grade-O{color:#1b5e20;font-weight:700} .grade-A\+{color:#2e7d32;font-weight:700}
+.grade-A{color:#388e3c} .grade-B\+{color:#0277bd} .grade-B{color:#01579b}
+.grade-C{color:#e65100} .grade-U{color:#b71c1c;font-weight:700}
+hr{border:none;border-top:1px solid var(--border);margin:16px 0}
+.text-center{text-align:center} .mt-1{margin-top:8px} .mt-2{margin-top:16px}
+.flex{display:flex} .gap-2{gap:8px} .items-center{align-items:center} .justify-between{justify-content:space-between}
+.w-full{width:100%} .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN PAGE
+============================================================ -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="college-logo">CEWCC</div>
+      <h1>CSI Ewart Women's<br>Christian College</h1>
+      <p>Empowering Women Through Excellence in Education</p>
+    </div>
+    <div class="login-body">
+      <div class="role-tabs" role="tablist" aria-label="Select role">
+        <button class="role-tab active" data-role="admin" role="tab">Admin</button>
+        <button class="role-tab" data-role="staff" role="tab">Staff</button>
+        <button class="role-tab" data-role="student" role="tab">Student</button>
+      </div>
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="login-id">User ID</label>
+          <div class="input-wrap">
+            <input type="text" id="login-id" autocomplete="username" placeholder="Enter your ID" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="login-pw">Password</label>
+          <div class="input-wrap">
+            <input type="password" id="login-pw" autocomplete="current-password" placeholder="Enter your password" required>
+            <button type="button" class="pw-toggle" id="pw-toggle-btn" aria-label="Show/hide password">👁️</button>
+          </div>
+        </div>
+        <div id="login-error" class="form-error" aria-live="polite"></div>
+        <button type="submit" class="btn btn-primary btn-full mt-1">Login &rarr;</button>
+      </form>
+      <div class="login-footer">
+        <a href="#" id="forgot-pw-link">Forgot password?</a>
+        <div class="demo-creds mt-1">
+          <div class="demo-creds-head" id="demo-toggle">
+            🔑 Demo Credentials <span id="demo-arrow">▼</span>
+          </div>
+          <div class="demo-creds-body" id="demo-body">
+            <strong>Admin:</strong> ID <code>admin</code> &nbsp; PW <code>admin123</code><br>
+            <strong>Staff:</strong> ID <code>staff01</code> &nbsp; PW <code>staff123</code><br>
+            <strong>Student:</strong> ID <code>stu001</code> &nbsp; PW <code>stu123</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP SHELL
+============================================================ -->
+<div id="app">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <button class="topbar-burger" id="sidebar-toggle" aria-label="Toggle menu">☰</button>
+    <div class="topbar-logo">CEWCC</div>
+    <div class="topbar-title">
+      CSI Ewart WCC
+      <span>Enterprise Resource Planning</span>
+    </div>
+    <div class="topbar-user">
+      <span class="name" id="topbar-username"></span>
+      <span class="role-badge" id="topbar-role-badge"></span>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">🌙</button>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.3)" id="logout-btn">Logout</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-nav" id="sidebar-nav"></div>
+      <div class="sidebar-footer">CSI Ewart WCC &copy; 2025</div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main" id="main-content" role="main">
+      <!-- Pages rendered here dynamically -->
+    </main>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal</h3>
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+'use strict';
+// ============================================================
+// SECTION 1: UTILITIES
+// ============================================================
+const $ = id => document.getElementById(id);
+const $q = sel => document.querySelector(sel);
+const $all = sel => document.querySelectorAll(sel);
+
+function sanitize(str) {
+  if (typeof str !== 'string') return String(str ?? '');
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function toast(msg, type = 'success', duration = 3200) {
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${icons[type]||''}</span><span>${sanitize(msg)}</span>`;
+  $('toast-container').appendChild(t);
+  setTimeout(() => {
+    t.classList.add('out');
+    t.addEventListener('animationend', () => t.remove(), { once: true });
+  }, duration);
+}
+
+function openModal(title, bodyHTML, footerHTML = '', large = false) {
+  $('modal-title').textContent = title;
+  $('modal-body').innerHTML = bodyHTML;
+  $('modal-footer').innerHTML = footerHTML || '<button class="btn btn-outline" onclick="closeModal()">Close</button>';
+  $('modal-box').className = large ? 'modal modal-lg' : 'modal';
+  $('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  $('modal-overlay').classList.remove('open');
+}
+$('modal-close').onclick = closeModal;
+$('modal-overlay').onclick = e => { if (e.target === $('modal-overlay')) closeModal(); };
+
+function exportCSV(data, filename) {
+  if (!data.length) { toast('No data to export', 'warning'); return; }
+  const headers = Object.keys(data[0]);
+  const rows = data.map(r => headers.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename + '_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  toast('Exported to CSV', 'success');
+}
+
+function grade(marks, max = 100) {
+  const p = (marks / max) * 100;
+  if (p >= 90) return 'O';
+  if (p >= 80) return 'A+';
+  if (p >= 70) return 'A';
+  if (p >= 60) return 'B+';
+  if (p >= 50) return 'B';
+  if (p >= 40) return 'C';
+  return 'U';
+}
+function gradeClass(g) {
+  const m = {'O':'grade-O','A+':'grade-A\+','A':'grade-A','B+':'grade-B\+','B':'grade-B','C':'grade-C','U':'grade-U'};
+  return m[g] || '';
+}
+function passFail(g) {
+  return g === 'U'
+    ? '<span class="badge badge-danger">Fail</span>'
+    : '<span class="badge badge-success">Pass</span>';
+}
+
+function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : '—'; }
+function today() { return new Date().toISOString().slice(0,10); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ============================================================
+// SECTION 2: DATA STORE (localStorage + in-memory fallback)
+// ============================================================
+let DB = {};
+
+function saveDB() {
+  try { localStorage.setItem('cewcc_erp', JSON.stringify(DB)); } catch(e) { /* in-memory only */ }
+}
+function loadDB() {
+  try {
+    const raw = localStorage.getItem('cewcc_erp');
+    if (raw) { DB = JSON.parse(raw); return true; }
+  } catch(e) {}
+  return false;
+}
+
+function seedData() {
+  DB = {};
+  // ── Departments ────────────────────────────────────────────
+  DB.departments = [
+    { id:'dept1', name:'Computer Science', code:'CS', hod:'staff01' },
+    { id:'dept2', name:'English Literature', code:'EL', hod:'staff03' },
+    { id:'dept3', name:'Commerce', code:'COM', hod:'staff06' },
+    { id:'dept4', name:'Mathematics', code:'MTH', hod:'staff02' },
+    { id:'dept5', name:'Physics', code:'PHY', hod:'staff04' },
+    { id:'dept6', name:'Chemistry', code:'CHE', hod:'staff05' },
+    { id:'dept7', name:'Tamil', code:'TAM', hod:'staff07' },
+    { id:'dept8', name:'History', code:'HIS', hod:'staff08' },
+  ];
+
+  // ── Courses ────────────────────────────────────────────────
+  DB.courses = [
+    {id:'c1',dept:'dept1',name:'Data Structures',code:'CS201',credits:4},
+    {id:'c2',dept:'dept1',name:'Programming in C',code:'CS101',credits:4},
+    {id:'c3',dept:'dept1',name:'Database Management',code:'CS301',credits:4},
+    {id:'c4',dept:'dept1',name:'Web Technology',code:'CS302',credits:3},
+    {id:'c5',dept:'dept2',name:'British Literature',code:'EL201',credits:3},
+    {id:'c6',dept:'dept2',name:'Communication Skills',code:'EL101',credits:3},
+    {id:'c7',dept:'dept3',name:'Accounting',code:'COM201',credits:4},
+    {id:'c8',dept:'dept3',name:'Business Law',code:'COM301',credits:3},
+    {id:'c9',dept:'dept4',name:'Calculus',code:'MTH101',credits:4},
+    {id:'c10',dept:'dept4',name:'Statistics',code:'MTH201',credits:4},
+    {id:'c11',dept:'dept4',name:'Algebra',code:'MTH102',credits:3},
+    {id:'c12',dept:'dept5',name:'Mechanics',code:'PHY101',credits:4},
+    {id:'c13',dept:'dept5',name:'Optics',code:'PHY201',credits:3},
+    {id:'c14',dept:'dept6',name:'Organic Chemistry',code:'CHE201',credits:4},
+    {id:'c15',dept:'dept6',name:'Inorganic Chemistry',code:'CHE101',credits:4},
+    {id:'c16',dept:'dept7',name:'Tamil Literature',code:'TAM101',credits:3},
+    {id:'c17',dept:'dept7',name:'Tamil Grammar',code:'TAM201',credits:3},
+    {id:'c18',dept:'dept8',name:'Ancient History',code:'HIS101',credits:3},
+    {id:'c19',dept:'dept8',name:'Modern History',code:'HIS201',credits:3},
+  ];
+
+  // ── Staff ──────────────────────────────────────────────────
+  DB.staff = [
+    {id:'staff01',name:'Dr. Priya Sundaram',email:'priya.s@cewcc.edu',phone:'9841001001',dept:'dept1',subjects:['c1','c2'],qualification:'M.Sc., Ph.D',joining:'2015-06-01'},
+    {id:'staff02',name:'Prof. Meena Krishnan',email:'meena.k@cewcc.edu',phone:'9841001002',dept:'dept4',subjects:['c9','c10'],qualification:'M.Sc., M.Phil',joining:'2012-07-15'},
+    {id:'staff03',name:'Dr. Lakshmi Rajan',email:'lakshmi.r@cewcc.edu',phone:'9841001003',dept:'dept2',subjects:['c5','c6'],qualification:'M.A., Ph.D',joining:'2010-06-01'},
+    {id:'staff04',name:'Prof. Kavitha Nair',email:'kavitha.n@cewcc.edu',phone:'9841001004',dept:'dept5',subjects:['c12','c13'],qualification:'M.Sc., M.Phil',joining:'2018-07-01'},
+    {id:'staff05',name:'Dr. Anitha Sharma',email:'anitha.s@cewcc.edu',phone:'9841001005',dept:'dept6',subjects:['c14','c15'],qualification:'M.Sc., Ph.D',joining:'2013-06-01'},
+    {id:'staff06',name:'Prof. Saranya Murugan',email:'saranya.m@cewcc.edu',phone:'9841001006',dept:'dept3',subjects:['c7','c8'],qualification:'M.Com., M.Phil',joining:'2016-07-15'},
+    {id:'staff07',name:'Dr. Deepa Venkat',email:'deepa.v@cewcc.edu',phone:'9841001007',dept:'dept7',subjects:['c16','c17'],qualification:'M.A., Ph.D',joining:'2011-06-01'},
+    {id:'staff08',name:'Prof. Revathy Iyer',email:'revathy.i@cewcc.edu',phone:'9841001008',dept:'dept8',subjects:['c18','c19'],qualification:'M.A., M.Phil',joining:'2019-07-01'},
+    {id:'staff09',name:'Ms. Suganya Balaji',email:'suganya.b@cewcc.edu',phone:'9841001009',dept:'dept1',subjects:['c3','c4'],qualification:'M.Sc., M.Phil',joining:'2020-06-01'},
+    {id:'staff10',name:'Dr. Nirmala Pandi',email:'nirmala.p@cewcc.edu',phone:'9841001010',dept:'dept4',subjects:['c11'],qualification:'M.Sc., Ph.D',joining:'2017-07-15'},
+  ];
+
+  // ── Students (40) ─────────────────────────────────────────
+  const stuList = [
+    // CS dept (year 1,2,3 x 3-4 students each)
+    {id:'stu001',reg:'CS2024001',name:'Aishwarya Ramachandran',dept:'dept1',year:1,phone:'9750001001',email:'aishwarya@student.cewcc.edu',dob:'2006-04-12',address:'12 Anna Nagar, Chennai',fee:25000,paid:25000},
+    {id:'stu002',reg:'CS2024002',name:'Bharathi Selvam',dept:'dept1',year:1,phone:'9750001002',email:'bharathi@student.cewcc.edu',dob:'2006-07-23',address:'45 T. Nagar, Chennai',fee:25000,paid:12500},
+    {id:'stu003',reg:'CS2024003',name:'Chandrika Pillai',dept:'dept1',year:1,phone:'9750001003',email:'chandrika@student.cewcc.edu',dob:'2006-01-15',address:'7 Velachery, Chennai',fee:25000,paid:0},
+    {id:'stu004',reg:'CS2023001',name:'Deepika Suresh',dept:'dept1',year:2,phone:'9750001004',email:'deepika@student.cewcc.edu',dob:'2005-09-30',address:'23 Adyar, Chennai',fee:25000,paid:25000},
+    {id:'stu005',reg:'CS2023002',name:'Elakkiya Pandian',dept:'dept1',year:2,phone:'9750001005',email:'elakkiya@student.cewcc.edu',dob:'2005-03-18',address:'56 Nungambakkam, Chennai',fee:25000,paid:15000},
+    // EL dept
+    {id:'stu006',reg:'EL2024001',name:'Fathima Banu',dept:'dept2',year:1,phone:'9750002001',email:'fathima@student.cewcc.edu',dob:'2006-11-05',address:'88 Triplicane, Chennai',fee:20000,paid:20000},
+    {id:'stu007',reg:'EL2024002',name:'Geetha Natarajan',dept:'dept2',year:1,phone:'9750002002',email:'geetha@student.cewcc.edu',dob:'2006-02-28',address:'32 Mylapore, Chennai',fee:20000,paid:10000},
+    {id:'stu008',reg:'EL2023001',name:'Hema Priya',dept:'dept2',year:2,phone:'9750002003',email:'hema@student.cewcc.edu',dob:'2005-06-14',address:'11 Kodambakkam, Chennai',fee:20000,paid:20000},
+    {id:'stu009',reg:'EL2022001',name:'Indira Devi',dept:'dept2',year:3,phone:'9750002004',email:'indira@student.cewcc.edu',dob:'2004-10-20',address:'67 Porur, Chennai',fee:20000,paid:20000},
+    // COM dept
+    {id:'stu010',reg:'COM2024001',name:'Janani Krishnaswamy',dept:'dept3',year:1,phone:'9750003001',email:'janani@student.cewcc.edu',dob:'2006-08-09',address:'3 Ambattur, Chennai',fee:22000,paid:22000},
+    {id:'stu011',reg:'COM2024002',name:'Kavya Reddy',dept:'dept3',year:1,phone:'9750003002',email:'kavya@student.cewcc.edu',dob:'2006-12-01',address:'18 Kolathur, Chennai',fee:22000,paid:11000},
+    {id:'stu012',reg:'COM2023001',name:'Lavanya Sekar',dept:'dept3',year:2,phone:'9750003003',email:'lavanya@student.cewcc.edu',dob:'2005-04-25',address:'42 Perambur, Chennai',fee:22000,paid:22000},
+    {id:'stu013',reg:'COM2022001',name:'Meenakshi Arumugam',dept:'dept3',year:3,phone:'9750003004',email:'meenakshi@student.cewcc.edu',dob:'2004-07-17',address:'91 Sholinganallur, Chennai',fee:22000,paid:22000},
+    // MTH dept
+    {id:'stu014',reg:'MTH2024001',name:'Nithya Balakrishnan',dept:'dept4',year:1,phone:'9750004001',email:'nithya@student.cewcc.edu',dob:'2006-05-22',address:'15 Velachery, Chennai',fee:20000,paid:20000},
+    {id:'stu015',reg:'MTH2024002',name:'Oviya Chandran',dept:'dept4',year:1,phone:'9750004002',email:'oviya@student.cewcc.edu',dob:'2006-09-11',address:'28 Guindy, Chennai',fee:20000,paid:20000},
+    {id:'stu016',reg:'MTH2023001',name:'Pavithra Gopal',dept:'dept4',year:2,phone:'9750004003',email:'pavithra@student.cewcc.edu',dob:'2005-01-30',address:'74 Thiruvanmiyur, Chennai',fee:20000,paid:10000},
+    {id:'stu017',reg:'MTH2022001',name:'Priyadharshini M',dept:'dept4',year:3,phone:'9750004004',email:'priyadharshini@student.cewcc.edu',dob:'2004-03-08',address:'5 Kattupakkam, Chennai',fee:20000,paid:20000},
+    // PHY dept
+    {id:'stu018',reg:'PHY2024001',name:'Ranjitha Kumar',dept:'dept5',year:1,phone:'9750005001',email:'ranjitha@student.cewcc.edu',dob:'2006-06-19',address:'37 Pallavaram, Chennai',fee:21000,paid:21000},
+    {id:'stu019',reg:'PHY2024002',name:'Saritha Venkatesh',dept:'dept5',year:1,phone:'9750005002',email:'saritha@student.cewcc.edu',dob:'2006-11-27',address:'60 Chromepet, Chennai',fee:21000,paid:0},
+    {id:'stu020',reg:'PHY2023001',name:'Shalini Raj',dept:'dept5',year:2,phone:'9750005003',email:'shalini@student.cewcc.edu',dob:'2005-08-04',address:'22 Tambaram, Chennai',fee:21000,paid:21000},
+    {id:'stu021',reg:'PHY2022001',name:'Thenmozhi Arjunan',dept:'dept5',year:3,phone:'9750005004',email:'thenmozhi@student.cewcc.edu',dob:'2004-02-13',address:'9 Medavakkam, Chennai',fee:21000,paid:21000},
+    // CHE dept
+    {id:'stu022',reg:'CHE2024001',name:'Uma Shankar',dept:'dept6',year:1,phone:'9750006001',email:'uma@student.cewcc.edu',dob:'2006-10-06',address:'46 Perungudi, Chennai',fee:21000,paid:21000},
+    {id:'stu023',reg:'CHE2024002',name:'Vasantha Kumari',dept:'dept6',year:1,phone:'9750006002',email:'vasantha@student.cewcc.edu',dob:'2006-04-29',address:'83 OMR, Chennai',fee:21000,paid:10500},
+    {id:'stu024',reg:'CHE2023001',name:'Vijayalakshmi S',dept:'dept6',year:2,phone:'9750006003',email:'vijayalakshmi@student.cewcc.edu',dob:'2005-12-15',address:'14 Nanganallur, Chennai',fee:21000,paid:21000},
+    {id:'stu025',reg:'CHE2022001',name:'Yamini Prashant',dept:'dept6',year:3,phone:'9750006004',email:'yamini@student.cewcc.edu',dob:'2004-05-23',address:'51 Madipakkam, Chennai',fee:21000,paid:21000},
+    // TAM dept
+    {id:'stu026',reg:'TAM2024001',name:'Aarthy Murugesan',dept:'dept7',year:1,phone:'9750007001',email:'aarthy@student.cewcc.edu',dob:'2006-07-07',address:'27 Villivakkam, Chennai',fee:18000,paid:18000},
+    {id:'stu027',reg:'TAM2024002',name:'Bhavani Sundaresan',dept:'dept7',year:1,phone:'9750007002',email:'bhavani@student.cewcc.edu',dob:'2006-03-21',address:'63 Pattabiram, Chennai',fee:18000,paid:9000},
+    {id:'stu028',reg:'TAM2023001',name:'Chitra Manoharan',dept:'dept7',year:2,phone:'9750007003',email:'chitra@student.cewcc.edu',dob:'2005-09-16',address:'8 Avadi, Chennai',fee:18000,paid:18000},
+    {id:'stu029',reg:'TAM2022001',name:'Durgadevi Annamalai',dept:'dept7',year:3,phone:'9750007004',email:'durga@student.cewcc.edu',dob:'2004-11-02',address:'39 Ambattur Estate, Chennai',fee:18000,paid:18000},
+    // HIS dept
+    {id:'stu030',reg:'HIS2024001',name:'Eswari Loganathan',dept:'dept8',year:1,phone:'9750008001',email:'eswari@student.cewcc.edu',dob:'2006-01-28',address:'17 Thiruvottiyur, Chennai',fee:18000,paid:18000},
+    {id:'stu031',reg:'HIS2024002',name:'Freeda Mary',dept:'dept8',year:1,phone:'9750008002',email:'freeda@student.cewcc.edu',dob:'2006-08-13',address:'72 Ennore, Chennai',fee:18000,paid:0},
+    {id:'stu032',reg:'HIS2023001',name:'Gomathi Selvaraj',dept:'dept8',year:2,phone:'9750008003',email:'gomathi@student.cewcc.edu',dob:'2005-05-31',address:'33 Manali, Chennai',fee:18000,paid:18000},
+    {id:'stu033',reg:'HIS2022001',name:'Hemalatha Ravi',dept:'dept8',year:3,phone:'9750008004',email:'hemalatha@student.cewcc.edu',dob:'2004-12-24',address:'55 Madhavaram, Chennai',fee:18000,paid:18000},
+    // Extra CS & MTH students
+    {id:'stu034',reg:'CS2022001',name:'Ishwarya Bose',dept:'dept1',year:3,phone:'9750001006',email:'ishwarya@student.cewcc.edu',dob:'2004-08-07',address:'19 Poonamallee, Chennai',fee:25000,paid:25000},
+    {id:'stu035',reg:'CS2023003',name:'Jayanthi Krishnamoorthi',dept:'dept1',year:2,phone:'9750001007',email:'jayanthi@student.cewcc.edu',dob:'2005-10-14',address:'41 Avadi, Chennai',fee:25000,paid:12500},
+    {id:'stu036',reg:'MTH2024003',name:'Keerthana Saravanan',dept:'dept4',year:1,phone:'9750004005',email:'keerthana@student.cewcc.edu',dob:'2006-06-03',address:'7 Korattur, Chennai',fee:20000,paid:20000},
+    {id:'stu037',reg:'COM2024003',name:'Lissy Thomas',dept:'dept3',year:1,phone:'9750003005',email:'lissy@student.cewcc.edu',dob:'2006-02-18',address:'61 Nungambakkam, Chennai',fee:22000,paid:22000},
+    {id:'stu038',reg:'PHY2024003',name:'Mythili Chandrasekhar',dept:'dept5',year:1,phone:'9750005005',email:'mythili@student.cewcc.edu',dob:'2006-09-25',address:'29 Adambakkam, Chennai',fee:21000,paid:21000},
+    {id:'stu039',reg:'CHE2024003',name:'Nandhini Venkataramanan',dept:'dept6',year:1,phone:'9750006005',email:'nandhini@student.cewcc.edu',dob:'2006-11-11',address:'84 Alandur, Chennai',fee:21000,paid:10500},
+    {id:'stu040',reg:'EL2024003',name:'Oviya Krishnaswamy',dept:'dept2',year:1,phone:'9750002005',email:'oviya.k@student.cewcc.edu',dob:'2006-07-19',address:'16 Besant Nagar, Chennai',fee:20000,paid:20000},
+  ];
+  DB.students = stuList;
+
+  // ── Attendance Records ─────────────────────────────────────
+  // Generate 30 days of attendance per student for their dept subjects
+  DB.attendance = {};
+  const subjectMap = {
+    'dept1': ['c1','c2'], 'dept2': ['c5','c6'], 'dept3': ['c7','c8'],
+    'dept4': ['c9','c10'], 'dept5': ['c12','c13'], 'dept6': ['c14','c15'],
+    'dept7': ['c16','c17'], 'dept8': ['c18','c19']
+  };
+  stuList.forEach(s => {
+    DB.attendance[s.id] = {};
+    const subjects = subjectMap[s.dept] || [];
+    subjects.forEach(subj => {
+      DB.attendance[s.id][subj] = {};
+      // Generate past 30 working days
+      const base = new Date();
+      let count = 0;
+      let d = new Date(base);
+      d.setDate(d.getDate() - 60);
+      while (count < 30) {
+        if (d.getDay() !== 0 && d.getDay() !== 6) {
+          const key = d.toISOString().slice(0,10);
+          // 75–95% attendance rate
+          const pct = 0.78 + Math.random() * 0.17;
+          DB.attendance[s.id][subj][key] = Math.random() < pct ? 'P' : 'A';
+          count++;
+        }
+        d.setDate(d.getDate() + 1);
+      }
+    });
+  });
+
+  // ── Marks ──────────────────────────────────────────────────
+  DB.marks = {};
+  const exams = ['Internal 1', 'Internal 2'];
+  stuList.forEach(s => {
+    DB.marks[s.id] = {};
+    const subjects = subjectMap[s.dept] || [];
+    subjects.forEach(subj => {
+      DB.marks[s.id][subj] = {};
+      exams.forEach(ex => {
+        const m = Math.floor(20 + Math.random() * 30); // 20-50 out of 50
+        DB.marks[s.id][subj][ex] = m;
+      });
+    });
+  });
+
+  // ── Timetable ──────────────────────────────────────────────
+  // days: Mon=1..Fri=5, slots: 9-10,10-11,11-12,12-1,2-3,3-4
+  DB.timetable = {
+    'dept1': [
+      {day:'Monday',slot:'9:00–10:00',subject:'c1',staff:'staff01'},
+      {day:'Monday',slot:'10:00–11:00',subject:'c2',staff:'staff01'},
+      {day:'Monday',slot:'2:00–3:00',subject:'c3',staff:'staff09'},
+      {day:'Tuesday',slot:'9:00–10:00',subject:'c2',staff:'staff01'},
+      {day:'Tuesday',slot:'11:00–12:00',subject:'c4',staff:'staff09'},
+      {day:'Wednesday',slot:'9:00–10:00',subject:'c1',staff:'staff01'},
+      {day:'Wednesday',slot:'2:00–3:00',subject:'c3',staff:'staff09'},
+      {day:'Thursday',slot:'10:00–11:00',subject:'c2',staff:'staff01'},
+      {day:'Thursday',slot:'11:00–12:00',subject:'c4',staff:'staff09'},
+      {day:'Friday',slot:'9:00–10:00',subject:'c1',staff:'staff01'},
+      {day:'Friday',slot:'2:00–3:00',subject:'c3',staff:'staff09'},
+    ],
+    'dept2': [
+      {day:'Monday',slot:'9:00–10:00',subject:'c5',staff:'staff03'},
+      {day:'Tuesday',slot:'10:00–11:00',subject:'c6',staff:'staff03'},
+      {day:'Wednesday',slot:'9:00–10:00',subject:'c5',staff:'staff03'},
+      {day:'Thursday',slot:'11:00–12:00',subject:'c6',staff:'staff03'},
+      {day:'Friday',slot:'9:00–10:00',subject:'c5',staff:'staff03'},
+    ],
+    'dept3': [
+      {day:'Monday',slot:'10:00–11:00',subject:'c7',staff:'staff06'},
+      {day:'Tuesday',slot:'9:00–10:00',subject:'c8',staff:'staff06'},
+      {day:'Wednesday',slot:'11:00–12:00',subject:'c7',staff:'staff06'},
+      {day:'Thursday',slot:'9:00–10:00',subject:'c8',staff:'staff06'},
+      {day:'Friday',slot:'10:00–11:00',subject:'c7',staff:'staff06'},
+    ],
+    'dept4': [
+      {day:'Monday',slot:'11:00–12:00',subject:'c9',staff:'staff02'},
+      {day:'Tuesday',slot:'9:00–10:00',subject:'c10',staff:'staff02'},
+      {day:'Wednesday',slot:'10:00–11:00',subject:'c11',staff:'staff10'},
+      {day:'Thursday',slot:'2:00–3:00',subject:'c9',staff:'staff02'},
+      {day:'Friday',slot:'11:00–12:00',subject:'c10',staff:'staff02'},
+    ],
+    'dept5': [
+      {day:'Monday',slot:'9:00–10:00',subject:'c12',staff:'staff04'},
+      {day:'Wednesday',slot:'9:00–10:00',subject:'c13',staff:'staff04'},
+      {day:'Friday',slot:'10:00–11:00',subject:'c12',staff:'staff04'},
+    ],
+    'dept6': [
+      {day:'Monday',slot:'2:00–3:00',subject:'c14',staff:'staff05'},
+      {day:'Tuesday',slot:'11:00–12:00',subject:'c15',staff:'staff05'},
+      {day:'Thursday',slot:'9:00–10:00',subject:'c14',staff:'staff05'},
+    ],
+    'dept7': [
+      {day:'Tuesday',slot:'2:00–3:00',subject:'c16',staff:'staff07'},
+      {day:'Thursday',slot:'10:00–11:00',subject:'c17',staff:'staff07'},
+      {day:'Friday',slot:'2:00–3:00',subject:'c16',staff:'staff07'},
+    ],
+    'dept8': [
+      {day:'Monday',slot:'10:00–11:00',subject:'c18',staff:'staff08'},
+      {day:'Wednesday',slot:'2:00–3:00',subject:'c19',staff:'staff08'},
+      {day:'Friday',slot:'9:00–10:00',subject:'c18',staff:'staff08'},
+    ],
+  };
+
+  // ── Announcements ──────────────────────────────────────────
+  DB.announcements = [
+    {id:'ann1',title:'College Day Celebration',message:'The annual College Day will be celebrated on 15th October 2025. All students and staff are requested to participate enthusiastically.',audience:'All',date:'2025-09-25',author:'Admin'},
+    {id:'ann2',title:'Semester Examination Schedule',message:'The end-semester examinations will commence from 10th November 2025. The detailed timetable will be published on the notice board.',audience:'All',date:'2025-09-20',author:'Admin'},
+    {id:'ann3',title:'Staff Meeting – Important',message:'A mandatory staff meeting is scheduled on 5th October at 11:00 AM in the Conference Hall. All teaching and non-teaching staff must attend.',audience:'Staff',date:'2025-09-18',author:'Admin'},
+    {id:'ann4',title:'Library Timings Updated',message:'The central library will now remain open from 8:00 AM to 6:30 PM on all working days. Saturday timings: 9:00 AM to 1:00 PM.',audience:'Students',date:'2025-09-15',author:'Admin'},
+    {id:'ann5',title:'Sports Day Registration Open',message:'Registration for the annual Sports Day events is now open. Interested students should contact their respective Physical Education staff before 7th October.',audience:'Students',date:'2025-09-10',author:'Admin'},
+  ];
+
+  // ── Study Materials ────────────────────────────────────────
+  DB.materials = [
+    {id:'mat1',subject:'c1',title:'Data Structures – Unit 1 Notes',link:'https://example.com/ds-unit1',staff:'staff01',date:'2025-09-01'},
+    {id:'mat2',subject:'c1',title:'Arrays and Linked Lists Practice Problems',link:'https://example.com/ds-arrays',staff:'staff01',date:'2025-09-10'},
+    {id:'mat3',subject:'c2',title:'C Programming – Pointers Reference',link:'https://example.com/c-pointers',staff:'staff01',date:'2025-09-05'},
+    {id:'mat4',subject:'c9',title:'Differential Calculus – Summary Sheet',link:'https://example.com/calc-diff',staff:'staff02',date:'2025-09-08'},
+    {id:'mat5',subject:'c5',title:'Victorian Literature – Reading List',link:'https://example.com/victorian',staff:'staff03',date:'2025-09-12'},
+    {id:'mat6',subject:'c7',title:'Accounting – Journal Entries Guide',link:'https://example.com/journal',staff:'staff06',date:'2025-09-14'},
+  ];
+
+  // ── Leave Applications ─────────────────────────────────────
+  DB.leaves = [
+    {id:'lv1',staffId:'staff01',from:'2025-10-03',to:'2025-10-04',reason:'Family function',status:'Pending',applied:'2025-09-28'},
+    {id:'lv2',staffId:'staff03',from:'2025-10-10',to:'2025-10-10',reason:'Medical appointment',status:'Approved',applied:'2025-09-25'},
+  ];
+
+  // ── Users (Auth) ────────────────────────────────────────────
+  DB.users = {
+    admin: { id:'admin', name:'College Administrator', role:'admin', password:'admin123' },
+    staff01: { id:'staff01', name:'Dr. Priya Sundaram', role:'staff', password:'staff123' },
+    staff02: { id:'staff02', name:'Prof. Meena Krishnan', role:'staff', password:'staff123' },
+    staff03: { id:'staff03', name:'Dr. Lakshmi Rajan', role:'staff', password:'staff123' },
+    staff04: { id:'staff04', name:'Prof. Kavitha Nair', role:'staff', password:'staff123' },
+    staff05: { id:'staff05', name:'Dr. Anitha Sharma', role:'staff', password:'staff123' },
+    staff06: { id:'staff06', name:'Prof. Saranya Murugan', role:'staff', password:'staff123' },
+    staff07: { id:'staff07', name:'Dr. Deepa Venkat', role:'staff', password:'staff123' },
+    staff08: { id:'staff08', name:'Prof. Revathy Iyer', role:'staff', password:'staff123' },
+    staff09: { id:'staff09', name:'Ms. Suganya Balaji', role:'staff', password:'staff123' },
+    staff10: { id:'staff10', name:'Dr. Nirmala Pandi', role:'staff', password:'staff123' },
+    stu001: { id:'stu001', name:'Aishwarya Ramachandran', role:'student', password:'stu123' },
+    stu002: { id:'stu002', name:'Bharathi Selvam', role:'student', password:'stu123' },
+    stu003: { id:'stu003', name:'Chandrika Pillai', role:'student', password:'stu123' },
+    stu004: { id:'stu004', name:'Deepika Suresh', role:'student', password:'stu123' },
+    stu005: { id:'stu005', name:'Elakkiya Pandian', role:'student', password:'stu123' },
+  };
+
+  DB.seeded = true;
+  saveDB();
+}
+
+// ============================================================
+// SECTION 3: AUTH
+// ============================================================
+let session = null;
+
+function initAuth() {
+  try {
+    const raw = localStorage.getItem('cewcc_session');
+    if (raw) session = JSON.parse(raw);
+  } catch(e) {}
+}
+function saveSession(s) {
+  session = s;
+  try { localStorage.setItem('cewcc_session', JSON.stringify(s)); } catch(e) {}
+}
+function clearSession() {
+  session = null;
+  try { localStorage.removeItem('cewcc_session'); } catch(e) {}
+}
+
+function login(userId, password, role) {
+  const user = DB.users[userId];
+  if (!user) return { ok: false, msg: 'User ID not found.' };
+  if (user.password !== password) return { ok: false, msg: 'Incorrect password.' };
+  if (user.role !== role) return { ok: false, msg: `This account is not a ${role} account.` };
+  saveSession({ id: user.id, name: user.name, role: user.role });
+  return { ok: true };
+}
+
+function logout() {
+  clearSession();
+  $('app').classList.remove('visible');
+  $('login-page').style.display = 'flex';
+  $('login-form').reset();
+  $('login-error').textContent = '';
+}
+
+// ============================================================
+// SECTION 4: ROUTER / NAVIGATION
+// ============================================================
+const NAV = {
+  admin: [
+    { section: null, items: [] },
+    { section: 'OVERVIEW', items: [
+      { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
+    ]},
+    { section: 'MANAGEMENT', items: [
+      { id: 'students', icon: '👩‍🎓', label: 'Students' },
+      { id: 'staff', icon: '👩‍🏫', label: 'Staff' },
+      { id: 'departments', icon: '🏛️', label: 'Departments & Courses' },
+    ]},
+    { section: 'ACADEMIC', items: [
+      { id: 'timetable', icon: '📅', label: 'Timetable' },
+      { id: 'announcements', icon: '📢', label: 'Announcements' },
+    ]},
+    { section: 'FINANCE', items: [
+      { id: 'fees', icon: '💰', label: 'Fee Overview' },
+    ]},
+    { section: 'SYSTEM', items: [
+      { id: 'settings', icon: '⚙️', label: 'Settings & Reset' },
+    ]},
+  ],
+  staff: [
+    { section: 'OVERVIEW', items: [
+      { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
+    ]},
+    { section: 'ACADEMIC', items: [
+      { id: 'attendance', icon: '✅', label: 'Attendance' },
+      { id: 'marks', icon: '📝', label: 'Marks Entry' },
+      { id: 'student-list', icon: '👩‍🎓', label: 'My Students' },
+      { id: 'materials', icon: '📚', label: 'Study Materials' },
+    ]},
+    { section: 'PERSONAL', items: [
+      { id: 'leave', icon: '🏖️', label: 'Leave Application' },
+      { id: 'profile', icon: '👤', label: 'My Profile' },
+    ]},
+  ],
+  student: [
+    { section: 'OVERVIEW', items: [
+      { id: 'dashboard', icon: '🏠', label: 'Dashboard' },
+      { id: 'profile', icon: '👤', label: 'My Profile' },
+    ]},
+    { section: 'ACADEMIC', items: [
+      { id: 'attendance', icon: '✅', label: 'Attendance' },
+      { id: 'marks', icon: '📊', label: 'Marks & Results' },
+      { id: 'timetable', icon: '📅', label: 'Timetable' },
+    ]},
+    { section: 'SERVICES', items: [
+      { id: 'fees', icon: '💳', label: 'Fee Details' },
+      { id: 'materials', icon: '📚', label: 'Study Materials' },
+      { id: 'announcements', icon: '📢', label: 'Announcements' },
+      { id: 'change-password', icon: '🔒', label: 'Change Password' },
+    ]},
+  ],
+};
+
+let currentPage = 'dashboard';
+
+function buildSidebar() {
+  const nav = $('sidebar-nav');
+  nav.innerHTML = '';
+  const role = session.role;
+  NAV[role].forEach(group => {
+    if (group.section) {
+      const sec = document.createElement('div');
+      sec.className = 'nav-section';
+      sec.textContent = group.section;
+      nav.appendChild(sec);
+    }
+    group.items.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'nav-item' + (item.id === currentPage ? ' active' : '');
+      el.dataset.page = item.id;
+      el.innerHTML = `<span class="icon">${item.icon}</span><span>${sanitize(item.label)}</span>`;
+      el.onclick = () => navigate(item.id);
+      nav.appendChild(el);
+    });
+  });
+}
+
+function navigate(pageId) {
+  currentPage = pageId;
+  buildSidebar();
+  renderPage(pageId);
+  // Close mobile sidebar
+  $('sidebar').classList.remove('open');
+  $('sidebar-overlay').classList.remove('open');
+}
+
+function renderPage(pageId) {
+  const mc = $('main-content');
+  mc.innerHTML = '';
+  const role = session.role;
+  if (role === 'admin') renderAdminPage(pageId);
+  else if (role === 'staff') renderStaffPage(pageId);
+  else if (role === 'student') renderStudentPage(pageId);
+}
+
+function showApp() {
+  $('login-page').style.display = 'none';
+  $('app').classList.add('visible');
+  // Topbar
+  $('topbar-username').textContent = session.name;
+  const rb = $('topbar-role-badge');
+  rb.textContent = session.role.charAt(0).toUpperCase() + session.role.slice(1);
+  rb.className = 'role-badge ' + session.role;
+  buildSidebar();
+  renderPage(currentPage);
+}
+
+// ============================================================
+// SECTION 5: ADMIN PORTAL
+// ============================================================
+function renderAdminPage(page) {
+  const pages = {
+    dashboard: adminDashboard,
+    students: adminStudents,
+    staff: adminStaff,
+    departments: adminDepartments,
+    timetable: adminTimetable,
+    announcements: adminAnnouncements,
+    fees: adminFees,
+    settings: adminSettings,
+  };
+  (pages[page] || adminDashboard)();
+}
+
+function adminDashboard() {
+  const mc = $('main-content');
+  const depts = DB.departments.length;
+  const courses = DB.courses.length;
+  const totalStu = DB.students.length;
+  const totalStaff = DB.staff.length;
+
+  // Attendance today
+  const todayStr = today();
+  let pTotal=0,pCount=0;
+  DB.students.forEach(s => {
+    const attRec = DB.attendance[s.id] || {};
+    Object.values(attRec).forEach(subj => {
+      const v = subj[todayStr];
+      if (v) { pTotal++; if (v==='P') pCount++; }
+    });
+  });
+  const attPct = pTotal ? Math.round(pCount/pTotal*100) : 0;
+
+  // Students per dept
+  const deptCount = {};
+  DB.departments.forEach(d => deptCount[d.id] = 0);
+  DB.students.forEach(s => { if(deptCount[s.dept]!==undefined) deptCount[s.dept]++; });
+  const maxCount = Math.max(...Object.values(deptCount), 1);
+
+  mc.innerHTML = `
+  <h2 class="section-title">🏠 Admin Dashboard</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-icon">👩‍🎓</div><div class="stat-value">${totalStu}</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card accent"><div class="stat-icon">👩‍🏫</div><div class="stat-value">${totalStaff}</div><div class="stat-label">Teaching Staff</div></div>
+    <div class="stat-card success"><div class="stat-icon">🏛️</div><div class="stat-value">${depts}</div><div class="stat-label">Departments</div></div>
+    <div class="stat-card info"><div class="stat-icon">📖</div><div class="stat-value">${courses}</div><div class="stat-label">Courses</div></div>
+    <div class="stat-card warning"><div class="stat-icon">📊</div><div class="stat-value">${attPct}%</div><div class="stat-label">Today's Attendance</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Students per Department</div>
+    <div class="chart-bar-wrap" id="dept-chart"></div>
+    <div class="chart-bar-wrap" style="height:auto;padding:4px 0;margin-top:4px" id="dept-chart-labels"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📢 Recent Announcements</div>
+    ${DB.announcements.slice(0,3).map(a=>`
+      <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+        <strong>${sanitize(a.title)}</strong>
+        <span class="badge badge-info" style="margin-left:8px">${sanitize(a.audience)}</span>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${sanitize(a.message).slice(0,80)}…</div>
+      </div>`).join('')}
+  </div>`;
+
+  // Draw chart
+  const chartWrap = $('dept-chart');
+  chartWrap.innerHTML = '';
+  DB.departments.forEach(d => {
+    const cnt = deptCount[d.id] || 0;
+    const pct = Math.round((cnt/maxCount)*100);
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar-item';
+    bar.innerHTML = `<div class="chart-bar" data-val="${cnt}" style="height:${pct}%;background:var(--primary)"></div><div class="chart-label">${sanitize(d.code)}<br>${cnt}</div>`;
+    chartWrap.appendChild(bar);
+  });
+}
+
+function adminStudents() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">👩‍🎓 Student Management</h2>
+  <div class="toolbar">
+    <input class="search-input" id="stu-search" placeholder="🔍 Search by name or register no…">
+    <select class="filter-select" id="stu-dept-filter">
+      <option value="">All Departments</option>
+      ${DB.departments.map(d=>`<option value="${d.id}">${sanitize(d.name)}</option>`).join('')}
+    </select>
+    <select class="filter-select" id="stu-year-filter">
+      <option value="">All Years</option>
+      <option value="1">Year 1</option><option value="2">Year 2</option><option value="3">Year 3</option>
+    </select>
+    <button class="btn btn-primary" onclick="openAddStudentModal()">+ Add Student</button>
+    <button class="btn btn-outline" onclick="exportStudentsCSV()">⬇ Export CSV</button>
+  </div>
+  <div id="stu-table-wrap"></div>`;
+
+  renderStudentTable();
+  $('stu-search').oninput = renderStudentTable;
+  $('stu-dept-filter').onchange = renderStudentTable;
+  $('stu-year-filter').onchange = renderStudentTable;
+}
+
+function getDeptName(id) {
+  return (DB.departments.find(d=>d.id===id)||{name:'—'}).name;
+}
+function getCourseById(id) { return DB.courses.find(c=>c.id===id)||{name:'—',code:'—'}; }
+function getStaffById(id) { return DB.staff.find(s=>s.id===id)||{name:'—'}; }
+
+function renderStudentTable() {
+  const search = ($('stu-search')||{}).value?.toLowerCase()||'';
+  const deptF = ($('stu-dept-filter')||{}).value||'';
+  const yearF = ($('stu-year-filter')||{}).value||'';
+  let students = DB.students.filter(s => {
+    const matchS = !search || s.name.toLowerCase().includes(search) || s.reg.toLowerCase().includes(search);
+    const matchD = !deptF || s.dept === deptF;
+    const matchY = !yearF || String(s.year) === yearF;
+    return matchS && matchD && matchY;
+  });
+  const wrap = $('stu-table-wrap');
+  if (!students.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>No students found.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Reg. No.</th><th>Name</th><th>Department</th><th>Year</th><th>Phone</th><th>Fee Status</th><th>Actions</th></tr></thead>
+    <tbody>${students.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><code>${sanitize(s.reg)}</code></td>
+      <td><strong>${sanitize(s.name)}</strong></td>
+      <td>${sanitize(getDeptName(s.dept))}</td>
+      <td>Year ${s.year}</td>
+      <td>${sanitize(s.phone)}</td>
+      <td>${s.paid>=s.fee?'<span class="badge badge-success">Paid</span>':s.paid>0?'<span class="badge badge-warning">Partial</span>':'<span class="badge badge-danger">Unpaid</span>'}</td>
+      <td><div class="table-actions">
+        <button class="btn btn-sm btn-outline" onclick="openEditStudentModal('${s.id}')">✏️ Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteStudent('${s.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function studentFormHTML(s = {}) {
+  return `
+  <div class="form-row">
+    <div class="form-group-inline"><label>Full Name *</label>
+      <input id="sf-name" value="${sanitize(s.name||'')}" placeholder="Student name"></div>
+    <div class="form-group-inline"><label>Register No. *</label>
+      <input id="sf-reg" value="${sanitize(s.reg||'')}" placeholder="CS2024001"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group-inline"><label>Department *</label>
+      <select id="sf-dept">${DB.departments.map(d=>`<option value="${d.id}"${s.dept===d.id?' selected':''}>${sanitize(d.name)}</option>`).join('')}</select></div>
+    <div class="form-group-inline"><label>Year *</label>
+      <select id="sf-year">
+        <option value="1"${s.year==1?' selected':''}>Year 1</option>
+        <option value="2"${s.year==2?' selected':''}>Year 2</option>
+        <option value="3"${s.year==3?' selected':''}>Year 3</option>
+      </select></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group-inline"><label>Email</label>
+      <input id="sf-email" value="${sanitize(s.email||'')}" placeholder="student@cewcc.edu"></div>
+    <div class="form-group-inline"><label>Phone</label>
+      <input id="sf-phone" value="${sanitize(s.phone||'')}" placeholder="9XXXXXXXXX"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group-inline"><label>Date of Birth</label>
+      <input type="date" id="sf-dob" value="${s.dob||''}"></div>
+    <div class="form-group-inline"><label>Total Fee (₹)</label>
+      <input type="number" id="sf-fee" value="${s.fee||25000}"></div>
+  </div>
+  <div class="form-group-inline"><label>Address</label>
+    <textarea id="sf-addr">${sanitize(s.address||'')}</textarea></div>`;
+}
+
+function openAddStudentModal() {
+  openModal('Add New Student', studentFormHTML(), `
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveNewStudent()">Save Student</button>`, true);
+}
+function saveNewStudent() {
+  const name = $('sf-name').value.trim();
+  const reg = $('sf-reg').value.trim();
+  if (!name || !reg) { toast('Name and register number required','error'); return; }
+  const newStu = {
+    id: 'stu' + uid(), reg, name, dept: $('sf-dept').value, year: parseInt($('sf-year').value),
+    email: $('sf-email').value.trim(), phone: $('sf-phone').value.trim(),
+    dob: $('sf-dob').value, fee: parseInt($('sf-fee').value)||25000,
+    paid: 0, address: $('sf-addr').value.trim()
+  };
+  DB.students.push(newStu);
+  DB.attendance[newStu.id] = {};
+  DB.marks[newStu.id] = {};
+  saveDB(); closeModal(); renderStudentTable();
+  toast('Student added successfully!', 'success');
+}
+
+function openEditStudentModal(id) {
+  const s = DB.students.find(x=>x.id===id);
+  if (!s) return;
+  openModal('Edit Student – ' + s.name, studentFormHTML(s), `
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveEditStudent('${id}')">Update</button>`, true);
+}
+function saveEditStudent(id) {
+  const s = DB.students.find(x=>x.id===id);
+  if (!s) return;
+  const name = $('sf-name').value.trim();
+  if (!name) { toast('Name required','error'); return; }
+  s.name = name; s.reg = $('sf-reg').value.trim(); s.dept = $('sf-dept').value;
+  s.year = parseInt($('sf-year').value); s.email = $('sf-email').value.trim();
+  s.phone = $('sf-phone').value.trim(); s.dob = $('sf-dob').value;
+  s.fee = parseInt($('sf-fee').value)||s.fee; s.address = $('sf-addr').value.trim();
+  // Update user record
+  if (DB.users[id]) DB.users[id].name = name;
+  saveDB(); closeModal(); renderStudentTable();
+  toast('Student updated!', 'success');
+}
+
+function deleteStudent(id) {
+  const s = DB.students.find(x=>x.id===id);
+  if (!s) return;
+  if (!confirm(`Delete student "${s.name}"? This cannot be undone.`)) return;
+  DB.students = DB.students.filter(x=>x.id!==id);
+  delete DB.attendance[id]; delete DB.marks[id];
+  saveDB(); renderStudentTable();
+  toast('Student deleted.', 'info');
+}
+
+function exportStudentsCSV() {
+  const data = DB.students.map(s=>({
+    'Register No': s.reg, 'Name': s.name,
+    'Department': getDeptName(s.dept), 'Year': s.year,
+    'Email': s.email, 'Phone': s.phone,
+    'Total Fee': s.fee, 'Paid': s.paid, 'Due': s.fee - s.paid
+  }));
+  exportCSV(data, 'students');
+}
+
+// ── Admin: Staff Management ────────────────────────────────────
+function adminStaff() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">👩‍🏫 Staff Management</h2>
+  <div class="toolbar">
+    <input class="search-input" id="staff-search" placeholder="🔍 Search by name…">
+    <select class="filter-select" id="staff-dept-filter">
+      <option value="">All Departments</option>
+      ${DB.departments.map(d=>`<option value="${d.id}">${sanitize(d.name)}</option>`).join('')}
+    </select>
+    <button class="btn btn-primary" onclick="openAddStaffModal()">+ Add Staff</button>
+    <button class="btn btn-outline" onclick="exportStaffCSV()">⬇ Export CSV</button>
+  </div>
+  <div id="staff-table-wrap"></div>`;
+  renderStaffTable();
+  $('staff-search').oninput = renderStaffTable;
+  $('staff-dept-filter').onchange = renderStaffTable;
+}
+
+function renderStaffTable() {
+  const search = ($('staff-search')||{}).value?.toLowerCase()||'';
+  const deptF = ($('staff-dept-filter')||{}).value||'';
+  let staff = DB.staff.filter(s => {
+    const matchS = !search || s.name.toLowerCase().includes(search);
+    const matchD = !deptF || s.dept === deptF;
+    return matchS && matchD;
+  });
+  const wrap = $('staff-table-wrap');
+  if (!staff.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>No staff found.</div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>ID</th><th>Name</th><th>Department</th><th>Subjects</th><th>Phone</th><th>Actions</th></tr></thead>
+    <tbody>${staff.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><code>${sanitize(s.id)}</code></td>
+      <td><strong>${sanitize(s.name)}</strong><br><small style="color:var(--text-muted)">${sanitize(s.qualification)}</small></td>
+      <td>${sanitize(getDeptName(s.dept))}</td>
+      <td>${(s.subjects||[]).map(sid=>sanitize(getCourseById(sid).name)).join(', ')}</td>
+      <td>${sanitize(s.phone)}</td>
+      <td><div class="table-actions">
+        <button class="btn btn-sm btn-outline" onclick="openEditStaffModal('${s.id}')">✏️ Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteStaff('${s.id}')">🗑️</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function staffFormHTML(s = {}) {
+  const allSubjects = DB.courses;
+  return `
+  <div class="form-row">
+    <div class="form-group-inline"><label>Staff ID *</label>
+      <input id="stff-id" value="${sanitize(s.id||'')}" placeholder="staff11" ${s.id?'readonly':''}></div>
+    <div class="form-group-inline"><label>Full Name *</label>
+      <input id="stff-name" value="${sanitize(s.name||'')}" placeholder="Dr. Name Surname"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group-inline"><label>Department *</label>
+      <select id="stff-dept">${DB.departments.map(d=>`<option value="${d.id}"${s.dept===d.id?' selected':''}>${sanitize(d.name)}</option>`).join('')}</select></div>
+    <div class="form-group-inline"><label>Qualification</label>
+      <input id="stff-qual" value="${sanitize(s.qualification||'')}"></div>
+  </div>
+  <div class="form-row">
+    <div class="form-group-inline"><label>Email</label>
+      <input id="stff-email" value="${sanitize(s.email||'')}" placeholder="name@cewcc.edu"></div>
+    <div class="form-group-inline"><label>Phone</label>
+      <input id="stff-phone" value="${sanitize(s.phone||'')}"></div>
+  </div>
+  <div class="form-group-inline"><label>Joining Date</label>
+    <input type="date" id="stff-joining" value="${s.joining||''}"></div>
+  <div class="form-group-inline"><label>Assigned Subjects (hold Ctrl/Cmd to select multiple)</label>
+    <select id="stff-subj" multiple style="height:120px">
+      ${allSubjects.map(c=>`<option value="${c.id}"${(s.subjects||[]).includes(c.id)?' selected':''}>${sanitize(c.code)} – ${sanitize(c.name)}</option>`).join('')}
+    </select></div>`;
+}
+
+function openAddStaffModal() {
+  openModal('Add New Staff', staffFormHTML(), `
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveNewStaff()">Save Staff</button>`, true);
+}
+function saveNewStaff() {
+  const id = $('stff-id').value.trim();
+  const name = $('stff-name').value.trim();
+  if (!id || !name) { toast('ID and name required','error'); return; }
+  if (DB.staff.find(s=>s.id===id)) { toast('Staff ID already exists','error'); return; }
+  const subjects = Array.from($('stff-subj').selectedOptions).map(o=>o.value);
+  const newStaff = {
+    id, name, dept: $('stff-dept').value, qualification: $('stff-qual').value.trim(),
+    email: $('stff-email').value.trim(), phone: $('stff-phone').value.trim(),
+    joining: $('stff-joining').value, subjects
+  };
+  DB.staff.push(newStaff);
+  DB.users[id] = { id, name, role: 'staff', password: 'staff123' };
+  saveDB(); closeModal(); renderStaffTable();
+  toast('Staff added! Default password: staff123', 'success');
+}
+function openEditStaffModal(id) {
+  const s = DB.staff.find(x=>x.id===id);
+  if (!s) return;
+  openModal('Edit Staff – ' + s.name, staffFormHTML(s), `
+    <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveEditStaff('${id}')">Update</button>`, true);
+}
+function saveEditStaff(id) {
+  const s = DB.staff.find(x=>x.id===id);
+  if (!s) return;
+  const name = $('stff-name').value.trim();
+  if (!name) { toast('Name required','error'); return; }
+  s.name = name; s.dept = $('stff-dept').value; s.qualification = $('stff-qual').value.trim();
+  s.email = $('stff-email').value.trim(); s.phone = $('stff-phone').value.trim();
+  s.joining = $('stff-joining').value;
+  s.subjects = Array.from($('stff-subj').selectedOptions).map(o=>o.value);
+  if (DB.users[id]) DB.users[id].name = name;
+  saveDB(); closeModal(); renderStaffTable();
+  toast('Staff updated!', 'success');
+}
+function deleteStaff(id) {
+  const s = DB.staff.find(x=>x.id===id);
+  if (!s) return;
+  if (!confirm(`Delete staff member "${s.name}"?`)) return;
+  DB.staff = DB.staff.filter(x=>x.id!==id);
+  saveDB(); renderStaffTable();
+  toast('Staff deleted.', 'info');
+}
+function exportStaffCSV() {
+  const data = DB.staff.map(s=>({
+    'ID': s.id, 'Name': s.name, 'Department': getDeptName(s.dept),
+    'Qualification': s.qualification, 'Email': s.email, 'Phone': s.phone,
+    'Joining Date': s.joining,
+    'Subjects': (s.subjects||[]).map(sid=>getCourseById(sid).name).join('; ')
+  }));
+  exportCSV(data, 'staff');
+}
+
+// ── Admin: Departments & Courses ──────────────────────────────
+function adminDepartments() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">🏛️ Departments & Courses</h2>
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="openAddDeptModal()">+ Add Department</button>
+  </div>
+  <div id="dept-list"></div>`;
+  renderDeptList();
+}
+function renderDeptList() {
+  const wrap = $('dept-list');
+  wrap.innerHTML = DB.departments.map(d => {
+    const deptCourses = DB.courses.filter(c=>c.dept===d.id);
+    return `
+    <div class="card">
+      <div class="card-title" style="justify-content:space-between">
+        <span>🏛️ ${sanitize(d.name)} <code style="font-size:11px">${sanitize(d.code)}</code></span>
+        <div class="table-actions">
+          <button class="btn btn-sm btn-outline" onclick="openEditDeptModal('${d.id}')">✏️ Edit Dept</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteDept('${d.id}')">🗑️</button>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;font-size:13px;color:var(--text-muted)">HOD: ${sanitize(getStaffById(d.hod).name)}</div>
+      <div class="toolbar" style="margin-bottom:10px">
+        <span style="font-weight:700;font-size:13px">Courses (${deptCourses.length})</span>
+        <button class="btn btn-sm btn-accent" onclick="openAddCourseModal('${d.id}')">+ Add Course</button>
+      </div>
+      ${deptCourses.length ? `<div class="table-wrap"><table>
+        <thead><tr><th>Code</th><th>Course Name</th><th>Credits</th><th>Actions</th></tr></thead>
+        <tbody>${deptCourses.map(c=>`
+        <tr>
+          <td><code>${sanitize(c.code)}</code></td>
+          <td>${sanitize(c.name)}</td>
+          <td>${c.credits}</td>
+          <td><div class="table-actions">
+            <button class="btn btn-sm btn-outline" onclick="openEditCourseModal('${c.id}')">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteCourse('${c.id}')">🗑️</button>
+          </div></td>
+        </tr>`).join('')}</tbody>
+      </table></div>` : `<div class="empty-state" style="padding:20px">No courses yet.</div>`}
+    </div>`;
+  }).join('');
+}
+function openAddDeptModal() {
+  openModal('Add Department', `
+    <div class="form-row">
+      <div class="form-group-inline"><label>Name *</label><input id="df-name" placeholder="Department name"></div>
+      <div class="form-group-inline"><label>Code *</label><input id="df-code" placeholder="CS"></div>
+    </div>
+    <div class="form-group-inline"><label>HOD</label>
+      <select id="df-hod">${DB.staff.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select></div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveNewDept()">Save</button>`);
+}
+function saveNewDept() {
+  const name = $('df-name').value.trim(), code = $('df-code').value.trim();
+  if (!name || !code) { toast('Name and code required','error'); return; }
+  DB.departments.push({ id: 'dept' + uid(), name, code, hod: $('df-hod').value });
+  saveDB(); closeModal(); renderDeptList();
+  toast('Department added!', 'success');
+}
+function openEditDeptModal(id) {
+  const d = DB.departments.find(x=>x.id===id); if (!d) return;
+  openModal('Edit Department', `
+    <div class="form-row">
+      <div class="form-group-inline"><label>Name</label><input id="df-name" value="${sanitize(d.name)}"></div>
+      <div class="form-group-inline"><label>Code</label><input id="df-code" value="${sanitize(d.code)}"></div>
+    </div>
+    <div class="form-group-inline"><label>HOD</label>
+      <select id="df-hod">${DB.staff.map(s=>`<option value="${s.id}"${d.hod===s.id?' selected':''}>${sanitize(s.name)}</option>`).join('')}</select></div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveEditDept('${id}')">Update</button>`);
+}
+function saveEditDept(id) {
+  const d = DB.departments.find(x=>x.id===id); if (!d) return;
+  d.name = $('df-name').value.trim(); d.code = $('df-code').value.trim(); d.hod = $('df-hod').value;
+  saveDB(); closeModal(); renderDeptList();
+  toast('Department updated!', 'success');
+}
+function deleteDept(id) {
+  const d = DB.departments.find(x=>x.id===id); if (!d) return;
+  if (!confirm(`Delete department "${d.name}"? All associated courses will also be removed.`)) return;
+  DB.departments = DB.departments.filter(x=>x.id!==id);
+  DB.courses = DB.courses.filter(c=>c.dept!==id);
+  saveDB(); renderDeptList();
+  toast('Department deleted.', 'info');
+}
+function openAddCourseModal(deptId) {
+  openModal('Add Course', `
+    <div class="form-row">
+      <div class="form-group-inline"><label>Course Name *</label><input id="cf-name" placeholder="Data Structures"></div>
+      <div class="form-group-inline"><label>Code *</label><input id="cf-code" placeholder="CS201"></div>
+    </div>
+    <div class="form-group-inline"><label>Credits</label><input type="number" id="cf-cred" value="4" min="1" max="6"></div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveNewCourse('${deptId}')">Save</button>`);
+}
+function saveNewCourse(deptId) {
+  const name = $('cf-name').value.trim(), code = $('cf-code').value.trim();
+  if (!name || !code) { toast('Name and code required','error'); return; }
+  DB.courses.push({ id: 'c' + uid(), dept: deptId, name, code, credits: parseInt($('cf-cred').value)||4 });
+  saveDB(); closeModal(); renderDeptList();
+  toast('Course added!', 'success');
+}
+function openEditCourseModal(id) {
+  const c = DB.courses.find(x=>x.id===id); if (!c) return;
+  openModal('Edit Course', `
+    <div class="form-row">
+      <div class="form-group-inline"><label>Course Name</label><input id="cf-name" value="${sanitize(c.name)}"></div>
+      <div class="form-group-inline"><label>Code</label><input id="cf-code" value="${sanitize(c.code)}"></div>
+    </div>
+    <div class="form-group-inline"><label>Credits</label><input type="number" id="cf-cred" value="${c.credits}"></div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveEditCourse('${id}')">Update</button>`);
+}
+function saveEditCourse(id) {
+  const c = DB.courses.find(x=>x.id===id); if (!c) return;
+  c.name = $('cf-name').value.trim(); c.code = $('cf-code').value.trim(); c.credits = parseInt($('cf-cred').value)||c.credits;
+  saveDB(); closeModal(); renderDeptList();
+  toast('Course updated!', 'success');
+}
+function deleteCourse(id) {
+  const c = DB.courses.find(x=>x.id===id); if (!c) return;
+  if (!confirm(`Delete course "${c.name}"?`)) return;
+  DB.courses = DB.courses.filter(x=>x.id!==id);
+  saveDB(); renderDeptList();
+  toast('Course deleted.', 'info');
+}
+
+// ── Admin: Timetable ──────────────────────────────────────────
+function adminTimetable() {
+  const mc = $('main-content');
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+  const slots = ['9:00–10:00','10:00–11:00','11:00–12:00','12:00–1:00','2:00–3:00','3:00–4:00'];
+  mc.innerHTML = `
+  <h2 class="section-title">📅 Timetable Management</h2>
+  <div class="toolbar">
+    <select class="filter-select" id="tt-dept-select">
+      ${DB.departments.map(d=>`<option value="${d.id}">${sanitize(d.name)}</option>`).join('')}
+    </select>
+    <button class="btn btn-primary" onclick="openAddTTModal()">+ Add Slot</button>
+  </div>
+  <div class="card" id="tt-view"></div>`;
+  renderTTView();
+  $('tt-dept-select').onchange = renderTTView;
+}
+function renderTTView() {
+  const deptId = $('tt-dept-select').value;
+  const entries = (DB.timetable[deptId]||[]);
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+  const slots = ['9:00–10:00','10:00–11:00','11:00–12:00','12:00–1:00','2:00–3:00','3:00–4:00'];
+  let html = `<div class="card-title">📅 ${sanitize(getDeptName(deptId))} – Weekly Timetable</div>
+  <div class="tt-grid">
+    <div class="tt-head">Time</div>
+    ${days.map(d=>`<div class="tt-head">${d}</div>`).join('')}
+    ${slots.map((sl,si) => `
+    <div class="tt-time">${sl}</div>
+    ${days.map(day => {
+      const e = entries.find(x=>x.day===day&&x.slot===sl);
+      return e
+        ? `<div class="tt-cell filled">
+            <div class="tt-subj">${sanitize(getCourseById(e.subject).code)}</div>
+            <div class="tt-staff">${sanitize(getStaffById(e.staff).name.split(' ').pop())}</div>
+            <button class="btn btn-sm btn-danger" style="margin-top:4px;padding:2px 6px;font-size:10px" onclick="deleteTTEntry('${deptId}','${day}','${sl}')">✕</button>
+           </div>`
+        : `<div class="tt-cell">–</div>`;
+    }).join('')}`).join('')}
+  </div>`;
+  $('tt-view').innerHTML = html;
+}
+function openAddTTModal() {
+  const deptId = $('tt-dept-select').value;
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+  const slots = ['9:00–10:00','10:00–11:00','11:00–12:00','12:00–1:00','2:00–3:00','3:00–4:00'];
+  const deptStaff = DB.staff.filter(s=>s.dept===deptId);
+  const deptCourses = DB.courses.filter(c=>c.dept===deptId);
+  openModal('Add Timetable Entry', `
+    <div class="form-group-inline"><label>Day</label>
+      <select id="tt-day">${days.map(d=>`<option>${d}</option>`).join('')}</select></div>
+    <div class="form-group-inline"><label>Time Slot</label>
+      <select id="tt-slot">${slots.map(s=>`<option>${s}</option>`).join('')}</select></div>
+    <div class="form-group-inline"><label>Subject</label>
+      <select id="tt-subj">${deptCourses.map(c=>`<option value="${c.id}">${sanitize(c.code)} – ${sanitize(c.name)}</option>`).join('')}</select></div>
+    <div class="form-group-inline"><label>Staff</label>
+      <select id="tt-staff">${deptStaff.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select></div>
+  `, `<button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveTTEntry('${deptId}')">Save</button>`);
+}
+function saveTTEntry(deptId) {
+  if (!DB.timetable[deptId]) DB.timetable[deptId] = [];
+  const day = $('tt-day').value, slot = $('tt-slot').value;
+  const existing = DB.timetable[deptId].find(x=>x.day===day&&x.slot===slot);
+  if (existing) { toast('Slot already occupied. Remove existing entry first.','warning'); return; }
+  DB.timetable[deptId].push({ day, slot, subject: $('tt-subj').value, staff: $('tt-staff').value });
+  saveDB(); closeModal(); renderTTView();
+  toast('Timetable entry added!', 'success');
+}
+function deleteTTEntry(deptId, day, slot) {
+  if (!confirm('Remove this timetable entry?')) return;
+  DB.timetable[deptId] = (DB.timetable[deptId]||[]).filter(x=>!(x.day===day&&x.slot===slot));
+  saveDB(); renderTTView();
+  toast('Entry removed.', 'info');
+}
+
+// ── Admin: Announcements ──────────────────────────────────────
+function adminAnnouncements() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">📢 Announcements</h2>
+  <div class="card">
+    <div class="card-title">Post New Announcement</div>
+    <div class="form-group-inline"><label>Title *</label><input id="ann-title" placeholder="Announcement title"></div>
+    <div class="form-group-inline"><label>Message *</label><textarea id="ann-msg" placeholder="Enter announcement message…"></textarea></div>
+    <div class="form-row">
+      <div class="form-group-inline"><label>Audience</label>
+        <select id="ann-aud"><option value="All">All</option><option value="Staff">Staff Only</option><option value="Students">Students Only</option></select></div>
+      <div class="form-group-inline"><label>Date</label><input type="date" id="ann-date" value="${today()}"></div>
+    </div>
+    <button class="btn btn-primary mt-1" onclick="saveAnnouncement()">📢 Post Announcement</button>
+  </div>
+  <div class="card">
+    <div class="card-title">All Announcements</div>
+    <div id="ann-list"></div>
+  </div>`;
+  renderAnnList();
+}
+function renderAnnList() {
+  const wrap = $('ann-list');
+  if (!DB.announcements.length) { wrap.innerHTML = `<div class="empty-state">No announcements yet.</div>`; return; }
+  wrap.innerHTML = DB.announcements.map(a=>`
+    <div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:start;gap:10px">
+      <div>
+        <strong>${sanitize(a.title)}</strong>
+        <span class="badge badge-info" style="margin-left:6px">${sanitize(a.audience)}</span>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${formatDate(a.date)} • by ${sanitize(a.author)}</div>
+        <div style="font-size:13px;margin-top:5px">${sanitize(a.message)}</div>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="deleteAnnouncement('${a.id}')">🗑️</button>
+    </div>`).join('');
+}
+function saveAnnouncement() {
+  const title = $('ann-title').value.trim(), msg = $('ann-msg').value.trim();
+  if (!title || !msg) { toast('Title and message required','error'); return; }
+  DB.announcements.unshift({ id:'ann'+uid(), title, message: msg, audience: $('ann-aud').value, date: $('ann-date').value, author: session.name });
+  $('ann-title').value = ''; $('ann-msg').value = '';
+  saveDB(); renderAnnList();
+  toast('Announcement posted!', 'success');
+}
+function deleteAnnouncement(id) {
+  if (!confirm('Delete this announcement?')) return;
+  DB.announcements = DB.announcements.filter(a=>a.id!==id);
+  saveDB(); renderAnnList();
+  toast('Announcement deleted.', 'info');
+}
+
+// ── Admin: Fee Overview ───────────────────────────────────────
+function adminFees() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">💰 Fee Overview</h2>
+  <div class="toolbar">
+    <input class="search-input" id="fee-search" placeholder="🔍 Search student…">
+    <select class="filter-select" id="fee-status-filter">
+      <option value="">All Status</option>
+      <option value="paid">Fully Paid</option>
+      <option value="partial">Partial</option>
+      <option value="unpaid">Unpaid</option>
+    </select>
+    <button class="btn btn-outline" onclick="exportFeesCSV()">⬇ Export CSV</button>
+  </div>
+  <div id="fee-table-wrap"></div>`;
+  renderFeeTable();
+  $('fee-search').oninput = renderFeeTable;
+  $('fee-status-filter').onchange = renderFeeTable;
+}
+function renderFeeTable() {
+  const search = ($('fee-search')||{}).value?.toLowerCase()||'';
+  const statusF = ($('fee-status-filter')||{}).value||'';
+  let students = DB.students.filter(s => {
+    const matchS = !search || s.name.toLowerCase().includes(search) || s.reg.toLowerCase().includes(search);
+    let matchSt = true;
+    if (statusF==='paid') matchSt = s.paid >= s.fee;
+    else if (statusF==='partial') matchSt = s.paid > 0 && s.paid < s.fee;
+    else if (statusF==='unpaid') matchSt = s.paid === 0;
+    return matchS && matchSt;
+  });
+  const totalCollected = DB.students.reduce((a,s)=>a+s.paid,0);
+  const totalDue = DB.students.reduce((a,s)=>a+(s.fee-s.paid),0);
+  const wrap = $('fee-table-wrap');
+  wrap.innerHTML = `
+  <div class="stat-grid" style="margin-bottom:16px">
+    <div class="stat-card success"><div class="stat-icon">✅</div><div class="stat-value">₹${(totalCollected/1000).toFixed(0)}K</div><div class="stat-label">Total Collected</div></div>
+    <div class="stat-card warning"><div class="stat-icon">⏳</div><div class="stat-value">₹${(totalDue/1000).toFixed(0)}K</div><div class="stat-label">Total Pending</div></div>
+    <div class="stat-card"><div class="stat-icon">👩‍🎓</div><div class="stat-value">${DB.students.filter(s=>s.paid>=s.fee).length}</div><div class="stat-label">Fully Paid Students</div></div>
+  </div>
+  ${students.length ? `<div class="table-wrap"><table>
+    <thead><tr><th>Reg. No.</th><th>Name</th><th>Dept</th><th>Total Fee</th><th>Paid</th><th>Due</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${students.map(s=>`
+    <tr>
+      <td><code>${sanitize(s.reg)}</code></td>
+      <td>${sanitize(s.name)}</td>
+      <td>${sanitize(getDeptName(s.dept))}</td>
+      <td>₹${s.fee.toLocaleString()}</td>
+      <td>₹${s.paid.toLocaleString()}</td>
+      <td style="color:${s.fee-s.paid>0?'var(--danger)':'var(--success)'}">₹${(s.fee-s.paid).toLocaleString()}</td>
+      <td>${s.paid>=s.fee?'<span class="badge badge-success">Paid</span>':s.paid>0?'<span class="badge badge-warning">Partial</span>':'<span class="badge badge-danger">Unpaid</span>'}</td>
+      <td>${s.paid<s.fee?`<button class="btn btn-sm btn-success" onclick="markFeePaid('${s.id}')">✅ Mark Paid</button>`:'<span style="color:var(--text-muted);font-size:12px">—</span>'}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>` : `<div class="empty-state"><div class="empty-icon">🔍</div>No records found.</div>`}`;
+}
+function markFeePaid(id) {
+  const s = DB.students.find(x=>x.id===id); if (!s) return;
+  if (!confirm(`Mark full fee as paid for ${s.name}?`)) return;
+  s.paid = s.fee;
+  saveDB(); renderFeeTable();
+  toast('Fee payment recorded!', 'success');
+}
+function exportFeesCSV() {
+  const data = DB.students.map(s=>({
+    'Reg No': s.reg, 'Name': s.name, 'Department': getDeptName(s.dept),
+    'Total Fee': s.fee, 'Paid': s.paid, 'Due': s.fee - s.paid,
+    'Status': s.paid>=s.fee?'Fully Paid':s.paid>0?'Partial':'Unpaid'
+  }));
+  exportCSV(data, 'fees');
+}
+
+// ── Admin: Settings ────────────────────────────────────────────
+function adminSettings() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">⚙️ Settings & Reset</h2>
+  <div class="card">
+    <div class="card-title">🔄 Demo Data</div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Reset all data to the original demo state. This will erase all changes and restore the default students, staff, courses, and records.</p>
+    <button class="btn btn-danger" onclick="resetDemoData()">🔄 Reset Demo Data</button>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 System Summary</div>
+    <div style="font-size:13px;line-height:2">
+      Students: <strong>${DB.students.length}</strong><br>
+      Staff: <strong>${DB.staff.length}</strong><br>
+      Departments: <strong>${DB.departments.length}</strong><br>
+      Courses: <strong>${DB.courses.length}</strong><br>
+      Announcements: <strong>${DB.announcements.length}</strong><br>
+      Study Materials: <strong>${DB.materials.length}</strong>
+    </div>
+  </div>`;
+}
+function resetDemoData() {
+  if (!confirm('Reset ALL data to demo defaults? All changes will be lost.')) return;
+  seedData();
+  toast('Demo data restored!', 'success');
+  navigate('dashboard');
+}
+
+// ── Admin: Leave Management ────────────────────────────────────
+function adminLeave() {
+  // Accessible from staff portal but admin can approve
+}
+
+// ============================================================
+// SECTION 6: STAFF PORTAL
+// ============================================================
+function renderStaffPage(page) {
+  const pages = {
+    dashboard: staffDashboard,
+    attendance: staffAttendance,
+    marks: staffMarks,
+    'student-list': staffStudentList,
+    materials: staffMaterials,
+    leave: staffLeave,
+    profile: staffProfile,
+  };
+  (pages[page] || staffDashboard)();
+}
+
+function getMyStaff() { return DB.staff.find(s=>s.id===session.id) || {}; }
+
+function staffDashboard() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  const myDept = me.dept;
+  const myStudents = DB.students.filter(s=>s.dept===myDept);
+  const mySubjects = (me.subjects||[]).map(id=>getCourseById(id));
+
+  // Today's schedule
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayDay = dayNames[new Date().getDay()];
+  const ttEntries = (DB.timetable[myDept]||[]).filter(e=>e.day===todayDay&&e.staff===session.id);
+
+  const recentAnn = DB.announcements.filter(a=>a.audience==='All'||a.audience==='Staff').slice(0,3);
+
+  mc.innerHTML = `
+  <h2 class="section-title">🏠 Staff Dashboard</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-icon">👩‍🎓</div><div class="stat-value">${myStudents.length}</div><div class="stat-label">My Students</div></div>
+    <div class="stat-card accent"><div class="stat-icon">📖</div><div class="stat-value">${mySubjects.length}</div><div class="stat-label">Subjects Assigned</div></div>
+    <div class="stat-card success"><div class="stat-icon">📅</div><div class="stat-value">${ttEntries.length}</div><div class="stat-label">Classes Today</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 Today's Schedule (${todayDay})</div>
+    ${ttEntries.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Time Slot</th><th>Subject</th></tr></thead>
+      <tbody>${ttEntries.map(e=>`<tr><td>${sanitize(e.slot)}</td><td>${sanitize(getCourseById(e.subject).name)}</td></tr>`).join('')}</tbody>
+    </table></div>` : `<div class="empty-state" style="padding:20px">No classes scheduled today.</div>`}
+  </div>
+  <div class="card">
+    <div class="card-title">📢 Recent Announcements</div>
+    ${recentAnn.length ? recentAnn.map(a=>`
+      <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+        <strong>${sanitize(a.title)}</strong>
+        <span class="badge badge-info" style="margin-left:6px">${sanitize(a.audience)}</span>
+        <div style="font-size:12px;color:var(--text-muted)">${formatDate(a.date)}</div>
+        <div style="font-size:13px;margin-top:3px">${sanitize(a.message)}</div>
+      </div>`).join('') : '<div class="empty-state" style="padding:20px">No announcements.</div>'}
+  </div>`;
+}
+
+function staffAttendance() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  const deptStudents = DB.students.filter(s=>s.dept===me.dept);
+  const mySubjects = (me.subjects||[]).map(id=>({id, ...getCourseById(id)}));
+
+  mc.innerHTML = `
+  <h2 class="section-title">✅ Attendance</h2>
+  <div class="card">
+    <div class="card-title">Mark Attendance</div>
+    <div class="toolbar" style="margin-bottom:14px">
+      <div class="form-group-inline" style="flex:1"><label>Subject</label>
+        <select id="att-subj">${mySubjects.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select></div>
+      <div class="form-group-inline"><label>Date</label>
+        <input type="date" id="att-date" value="${today()}"></div>
+      <button class="btn btn-primary" onclick="loadAttendanceForm()">Load Students</button>
+    </div>
+    <div id="att-form-wrap"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 Attendance History</div>
+    <div class="toolbar" style="margin-bottom:10px">
+      <select class="filter-select" id="att-hist-subj">${mySubjects.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select>
+      <button class="btn btn-outline" onclick="loadAttHistory()">View</button>
+    </div>
+    <div id="att-history-wrap"></div>
+  </div>`;
+}
+
+function loadAttendanceForm() {
+  const me = getMyStaff();
+  const subj = $('att-subj').value;
+  const date = $('att-date').value;
+  const students = DB.students.filter(s=>s.dept===me.dept);
+  const wrap = $('att-form-wrap');
+  if (!students.length) { wrap.innerHTML = '<div class="empty-state">No students in your department.</div>'; return; }
+  wrap.innerHTML = `
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:13px;color:var(--text-muted)">${students.length} students</span>
+    <button class="btn btn-sm btn-success" onclick="markAllPresent('${subj}','${date}')">✅ Mark All Present</button>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden">
+    ${students.map(s=>{
+      const cur = (DB.attendance[s.id]||{})[subj]||{};
+      const val = cur[date] || '';
+      return `<div class="att-row">
+        <div class="att-name"><strong>${sanitize(s.name)}</strong> <span style="font-size:11px;color:var(--text-muted)">${sanitize(s.reg)}</span></div>
+        <div class="att-toggle">
+          <button class="att-btn ${val==='P'?'present-active':''}" id="att-P-${s.id}" onclick="setAtt('${s.id}','${subj}','${date}','P','${subj}')">P</button>
+          <button class="att-btn ${val==='A'?'absent-active':''}" id="att-A-${s.id}" onclick="setAtt('${s.id}','${subj}','${date}','A','${subj}')">A</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <button class="btn btn-primary mt-1 btn-full" onclick="saveAttendance('${subj}','${date}')">💾 Save Attendance</button>`;
+}
+
+function setAtt(stuId, subj, date, val) {
+  if (!DB.attendance[stuId]) DB.attendance[stuId] = {};
+  if (!DB.attendance[stuId][subj]) DB.attendance[stuId][subj] = {};
+  DB.attendance[stuId][subj][date] = val;
+  // Update buttons
+  const pBtn = $(`att-P-${stuId}`), aBtn = $(`att-A-${stuId}`);
+  if (pBtn) { pBtn.className = 'att-btn' + (val==='P'?' present-active':''); }
+  if (aBtn) { aBtn.className = 'att-btn' + (val==='A'?' absent-active':''); }
+}
+
+function markAllPresent(subj, date) {
+  const me = getMyStaff();
+  DB.students.filter(s=>s.dept===me.dept).forEach(s => setAtt(s.id, subj, date, 'P'));
+}
+
+function saveAttendance(subj, date) {
+  saveDB();
+  toast('Attendance saved!', 'success');
+}
+
+function loadAttHistory() {
+  const me = getMyStaff();
+  const subj = $('att-hist-subj').value;
+  const students = DB.students.filter(s=>s.dept===me.dept);
+  // Get all dates
+  const dates = new Set();
+  students.forEach(s => {
+    const rec = (DB.attendance[s.id]||{})[subj]||{};
+    Object.keys(rec).forEach(d=>dates.add(d));
+  });
+  const sortedDates = [...dates].sort().slice(-10).reverse();
+  const wrap = $('att-history-wrap');
+  if (!sortedDates.length) { wrap.innerHTML = '<div class="empty-state">No attendance records yet.</div>'; return; }
+  wrap.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Name</th>${sortedDates.map(d=>`<th>${formatDate(d)}</th>`).join('')}</tr></thead>
+    <tbody>${students.map(s=>{
+      const rec = (DB.attendance[s.id]||{})[subj]||{};
+      return `<tr><td>${sanitize(s.name)}</td>${sortedDates.map(d=>{
+        const v = rec[d]||'–';
+        return `<td><span class="badge ${v==='P'?'badge-success':v==='A'?'badge-danger':'badge-muted'}">${v}</span></td>`;
+      }).join('')}</tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+function staffMarks() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  const mySubjects = (me.subjects||[]).map(id=>({id, ...getCourseById(id)}));
+  const exams = ['Internal 1','Internal 2','Model','Semester'];
+
+  mc.innerHTML = `
+  <h2 class="section-title">📝 Marks Entry</h2>
+  <div class="card">
+    <div class="toolbar" style="flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div class="form-group-inline" style="flex:1"><label>Subject</label>
+        <select id="mk-subj">${mySubjects.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select></div>
+      <div class="form-group-inline"><label>Exam</label>
+        <select id="mk-exam">${exams.map(e=>`<option>${e}</option>`).join('')}</select></div>
+      <div class="form-group-inline"><label>Max Marks</label>
+        <input type="number" id="mk-max" value="50" style="width:80px"></div>
+      <button class="btn btn-primary" onclick="loadMarksForm()">Load Students</button>
+    </div>
+    <div id="marks-form-wrap"></div>
+  </div>`;
+}
+
+function loadMarksForm() {
+  const me = getMyStaff();
+  const subj = $('mk-subj').value;
+  const exam = $('mk-exam').value;
+  const maxM = parseInt($('mk-max').value)||50;
+  const students = DB.students.filter(s=>s.dept===me.dept);
+  const wrap = $('marks-form-wrap');
+  if (!students.length) { wrap.innerHTML = '<div class="empty-state">No students.</div>'; return; }
+  wrap.innerHTML = `
+  <div class="table-wrap"><table>
+    <thead><tr><th>Reg. No.</th><th>Name</th><th>Marks (/${maxM})</th><th>Grade</th></tr></thead>
+    <tbody>${students.map(s=>{
+      const cur = ((DB.marks[s.id]||{})[subj]||{})[exam];
+      return `<tr>
+        <td><code>${sanitize(s.reg)}</code></td>
+        <td>${sanitize(s.name)}</td>
+        <td><input type="number" id="mk-${s.id}" value="${cur!==undefined?cur:''}" min="0" max="${maxM}" style="width:80px;padding:5px 8px;border:1.5px solid var(--border);border-radius:4px;background:var(--bg);color:var(--text)" oninput="updateGradeDisplay('${s.id}',${maxM})"></td>
+        <td id="grade-${s.id}"><span class="badge badge-muted">—</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>
+  <button class="btn btn-primary mt-1" onclick="saveMarks('${subj}','${exam}',${maxM})">💾 Save Marks</button>`;
+  // Show existing grades
+  students.forEach(s => updateGradeDisplay(s.id, maxM));
+}
+
+function updateGradeDisplay(stuId, maxM) {
+  const inp = $(`mk-${stuId}`); if (!inp) return;
+  const v = parseInt(inp.value);
+  const gd = $(`grade-${stuId}`); if (!gd) return;
+  if (isNaN(v)) { gd.innerHTML = '<span class="badge badge-muted">—</span>'; return; }
+  const g = grade(v, maxM);
+  const cls = g==='U'?'badge-danger':g==='O'||g==='A+'?'badge-success':'badge-info';
+  gd.innerHTML = `<span class="badge ${cls}">${g}</span>`;
+}
+
+function saveMarks(subj, exam, maxM) {
+  const me = getMyStaff();
+  const students = DB.students.filter(s=>s.dept===me.dept);
+  let count = 0;
+  students.forEach(s => {
+    const inp = $(`mk-${s.id}`); if (!inp) return;
+    const v = parseInt(inp.value);
+    if (isNaN(v) || v < 0 || v > maxM) return;
+    if (!DB.marks[s.id]) DB.marks[s.id] = {};
+    if (!DB.marks[s.id][subj]) DB.marks[s.id][subj] = {};
+    DB.marks[s.id][subj][exam] = v;
+    count++;
+  });
+  saveDB();
+  toast(`Marks saved for ${count} students!`, 'success');
+}
+
+function staffStudentList() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  const students = DB.students.filter(s=>s.dept===me.dept);
+  mc.innerHTML = `
+  <h2 class="section-title">👩‍🎓 My Students</h2>
+  <div class="toolbar">
+    <input class="search-input" id="sl-search" placeholder="🔍 Search…">
+  </div>
+  <div id="sl-table-wrap"></div>`;
+  const renderSL = () => {
+    const search = $('sl-search').value.toLowerCase();
+    const filtered = students.filter(s=>s.name.toLowerCase().includes(search)||s.reg.toLowerCase().includes(search));
+    $('sl-table-wrap').innerHTML = filtered.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Reg. No.</th><th>Name</th><th>Year</th><th>Phone</th><th>Email</th></tr></thead>
+      <tbody>${filtered.map((s,i)=>`<tr>
+        <td>${i+1}</td><td><code>${sanitize(s.reg)}</code></td><td>${sanitize(s.name)}</td>
+        <td>Year ${s.year}</td><td>${sanitize(s.phone)}</td><td>${sanitize(s.email)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : '<div class="empty-state">No students found.</div>';
+  };
+  renderSL();
+  $('sl-search').oninput = renderSL;
+}
+
+function staffMaterials() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  const mySubjects = (me.subjects||[]).map(id=>({id, ...getCourseById(id)}));
+  mc.innerHTML = `
+  <h2 class="section-title">📚 Study Materials</h2>
+  <div class="card">
+    <div class="card-title">Add New Material</div>
+    <div class="form-group-inline"><label>Subject</label>
+      <select id="mat-subj">${mySubjects.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}</select></div>
+    <div class="form-row">
+      <div class="form-group-inline"><label>Title *</label><input id="mat-title" placeholder="Material title"></div>
+      <div class="form-group-inline"><label>Link / URL *</label><input id="mat-link" placeholder="https://…"></div>
+    </div>
+    <button class="btn btn-primary mt-1" onclick="saveMaterial()">📎 Add Material</button>
+  </div>
+  <div class="card">
+    <div class="card-title">My Study Materials</div>
+    <div id="mat-list"></div>
+  </div>`;
+  renderMatList();
+}
+function renderMatList() {
+  const me = getMyStaff();
+  const myMats = DB.materials.filter(m=>m.staff===me.id);
+  const wrap = $('mat-list');
+  if (!myMats.length) { wrap.innerHTML = '<div class="empty-state">No materials uploaded yet.</div>'; return; }
+  wrap.innerHTML = myMats.map(m=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <strong>${sanitize(m.title)}</strong>
+        <span class="badge badge-info" style="margin-left:6px">${sanitize(getCourseById(m.subject).name)}</span>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${formatDate(m.date)}</div>
+        <a href="${sanitize(m.link)}" target="_blank" style="font-size:12px">🔗 ${sanitize(m.link)}</a>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="deleteMaterial('${m.id}')">🗑️</button>
+    </div>`).join('');
+}
+function saveMaterial() {
+  const title = $('mat-title').value.trim(), link = $('mat-link').value.trim();
+  if (!title || !link) { toast('Title and link required','error'); return; }
+  DB.materials.push({ id:'mat'+uid(), subject: $('mat-subj').value, title, link, staff: session.id, date: today() });
+  $('mat-title').value = ''; $('mat-link').value = '';
+  saveDB(); renderMatList();
+  toast('Material added!', 'success');
+}
+function deleteMaterial(id) {
+  if (!confirm('Delete this material?')) return;
+  DB.materials = DB.materials.filter(m=>m.id!==id);
+  saveDB(); renderMatList();
+  toast('Material removed.', 'info');
+}
+
+function staffLeave() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">🏖️ Leave Application</h2>
+  <div class="card">
+    <div class="card-title">Apply for Leave</div>
+    <div class="form-row">
+      <div class="form-group-inline"><label>From Date *</label><input type="date" id="lv-from" value="${today()}"></div>
+      <div class="form-group-inline"><label>To Date *</label><input type="date" id="lv-to" value="${today()}"></div>
+    </div>
+    <div class="form-group-inline"><label>Reason *</label><textarea id="lv-reason" placeholder="State the reason for leave…"></textarea></div>
+    <button class="btn btn-primary mt-1" onclick="applyLeave()">📤 Submit Application</button>
+  </div>
+  <div class="card">
+    <div class="card-title">My Leave Applications</div>
+    <div id="leave-list"></div>
+  </div>`;
+  renderLeaveList();
+}
+function renderLeaveList() {
+  const myLeaves = DB.leaves.filter(l=>l.staffId===session.id);
+  const wrap = $('leave-list');
+  if (!myLeaves.length) { wrap.innerHTML = '<div class="empty-state">No applications submitted.</div>'; return; }
+  wrap.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>From</th><th>To</th><th>Reason</th><th>Applied On</th><th>Status</th></tr></thead>
+    <tbody>${myLeaves.map(l=>`<tr>
+      <td>${formatDate(l.from)}</td><td>${formatDate(l.to)}</td>
+      <td>${sanitize(l.reason)}</td><td>${formatDate(l.applied)}</td>
+      <td><span class="badge ${l.status==='Approved'?'badge-success':l.status==='Rejected'?'badge-danger':'badge-warning'}">${sanitize(l.status)}</span></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+function applyLeave() {
+  const from = $('lv-from').value, to = $('lv-to').value, reason = $('lv-reason').value.trim();
+  if (!from || !to || !reason) { toast('All fields required','error'); return; }
+  if (to < from) { toast('End date must be after start date','error'); return; }
+  DB.leaves.push({ id:'lv'+uid(), staffId: session.id, from, to, reason, status:'Pending', applied: today() });
+  $('lv-reason').value = '';
+  saveDB(); renderLeaveList();
+  toast('Leave application submitted!', 'success');
+}
+
+function staffProfile() {
+  const mc = $('main-content');
+  const me = getMyStaff();
+  mc.innerHTML = `
+  <h2 class="section-title">👤 My Profile</h2>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
+      <div style="width:70px;height:70px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;flex-shrink:0">
+        ${(me.name||'S').charAt(0)}</div>
+      <div>
+        <div style="font-size:18px;font-weight:700">${sanitize(me.name||'')}</div>
+        <div style="color:var(--text-muted);font-size:13px">${sanitize(me.qualification||'')} • ${sanitize(getDeptName(me.dept))}</div>
+        <div style="color:var(--text-muted);font-size:12px">${sanitize(me.email||'')}</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div><strong>Staff ID:</strong> <code>${sanitize(me.id||'')}</code></div>
+      <div><strong>Phone:</strong> ${sanitize(me.phone||'')}</div>
+    </div>
+    <div style="margin-top:10px"><strong>Joining Date:</strong> ${formatDate(me.joining)}</div>
+    <div style="margin-top:6px"><strong>Subjects:</strong> ${(me.subjects||[]).map(s=>sanitize(getCourseById(s).name)).join(', ')}</div>
+  </div>
+  <div class="card">
+    <div class="card-title">🔒 Change Password</div>
+    <div class="form-group-inline"><label>Current Password</label><input type="password" id="cp-old" placeholder="Current password"></div>
+    <div class="form-group-inline"><label>New Password</label><input type="password" id="cp-new" placeholder="New password (min 6 chars)"></div>
+    <div class="form-group-inline"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Repeat new password"></div>
+    <button class="btn btn-primary mt-1" onclick="changePassword()">🔒 Update Password</button>
+  </div>`;
+}
+
+function changePassword() {
+  const old = $('cp-old').value, nw = $('cp-new').value, confirm_ = $('cp-confirm').value;
+  if (!old || !nw || !confirm_) { toast('All fields required','error'); return; }
+  const user = DB.users[session.id];
+  if (!user || user.password !== old) { toast('Current password incorrect','error'); return; }
+  if (nw.length < 6) { toast('New password must be at least 6 characters','error'); return; }
+  if (nw !== confirm_) { toast('Passwords do not match','error'); return; }
+  user.password = nw;
+  saveDB();
+  $('cp-old').value = ''; $('cp-new').value = ''; $('cp-confirm').value = '';
+  toast('Password updated successfully!', 'success');
+}
+
+// ============================================================
+// SECTION 7: STUDENT PORTAL
+// ============================================================
+function renderStudentPage(page) {
+  const pages = {
+    dashboard: studentDashboard,
+    profile: studentProfile,
+    attendance: studentAttendance,
+    marks: studentMarks,
+    timetable: studentTimetable,
+    fees: studentFees,
+    materials: studentMaterials,
+    announcements: studentAnnouncements,
+    'change-password': studentChangePassword,
+  };
+  (pages[page] || studentDashboard)();
+}
+
+function getMyStudent() { return DB.students.find(s=>s.id===session.id) || {}; }
+
+function calcAttPct(stuId, dept) {
+  const subjectMap = { 'dept1':['c1','c2'],'dept2':['c5','c6'],'dept3':['c7','c8'],
+    'dept4':['c9','c10'],'dept5':['c12','c13'],'dept6':['c14','c15'],'dept7':['c16','c17'],'dept8':['c18','c19'] };
+  const subjects = subjectMap[dept] || [];
+  let total=0, present=0;
+  subjects.forEach(subj => {
+    const rec = (DB.attendance[stuId]||{})[subj]||{};
+    Object.values(rec).forEach(v => { total++; if(v==='P') present++; });
+  });
+  return total ? Math.round(present/total*100) : 0;
+}
+
+function studentDashboard() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const attPct = calcAttPct(me.id, me.dept);
+  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const todayDay = dayNames[new Date().getDay()];
+  const ttToday = (DB.timetable[me.dept]||[]).filter(e=>e.day===todayDay);
+  const anns = DB.announcements.filter(a=>a.audience==='All'||a.audience==='Students').slice(0,3);
+  const due = me.fee - me.paid;
+
+  mc.innerHTML = `
+  <h2 class="section-title">🏠 My Dashboard</h2>
+  ${attPct < 75 ? `<div class="warning-box">⚠️ Your attendance is <strong>${attPct}%</strong>, below the required 75%. Please attend classes regularly to avoid de-barring.</div>` : ''}
+  <div class="stat-grid">
+    <div class="stat-card ${attPct<75?'warning':'success'}">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value">${attPct}%</div>
+      <div class="stat-label">Overall Attendance</div>
+    </div>
+    <div class="stat-card ${due>0?'warning':'success'}">
+      <div class="stat-icon">💳</div>
+      <div class="stat-value">${due>0?'Pending':'Paid'}</div>
+      <div class="stat-label">Fee Status</div>
+    </div>
+    <div class="stat-card info">
+      <div class="stat-icon">📅</div>
+      <div class="stat-value">${ttToday.length}</div>
+      <div class="stat-label">Classes Today</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 Today's Schedule (${todayDay})</div>
+    ${ttToday.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Time</th><th>Subject</th><th>Staff</th></tr></thead>
+      <tbody>${ttToday.map(e=>`<tr>
+        <td>${sanitize(e.slot)}</td>
+        <td>${sanitize(getCourseById(e.subject).name)}</td>
+        <td>${sanitize(getStaffById(e.staff).name)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : '<div class="empty-state" style="padding:16px">No classes today.</div>'}
+  </div>
+  <div class="card">
+    <div class="card-title">📢 Latest Announcements</div>
+    ${anns.length ? anns.map(a=>`
+      <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+        <strong>${sanitize(a.title)}</strong>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">${formatDate(a.date)}</div>
+        <div style="font-size:13px;margin-top:3px">${sanitize(a.message).slice(0,100)}…</div>
+      </div>`).join('') : '<div class="empty-state" style="padding:16px">No announcements.</div>'}
+  </div>`;
+}
+
+function studentProfile() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  mc.innerHTML = `
+  <h2 class="section-title">👤 My Profile</h2>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px">
+      <div style="width:70px;height:70px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:700;flex-shrink:0">
+        ${(me.name||'S').charAt(0)}</div>
+      <div>
+        <div style="font-size:18px;font-weight:700">${sanitize(me.name||'')}</div>
+        <div style="color:var(--text-muted);font-size:13px"><code>${sanitize(me.reg||'')}</code> • ${sanitize(getDeptName(me.dept))}, Year ${me.year}</div>
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom:10px">
+      <div><strong>Email:</strong> ${sanitize(me.email||'')}</div>
+      <div><strong>Date of Birth:</strong> ${formatDate(me.dob)}</div>
+    </div>
+    <div style="margin-bottom:10px"><strong>Address:</strong> ${sanitize(me.address||'')}</div>
+    <hr>
+    <div class="card-title" style="margin-top:14px">✏️ Edit Contact Details</div>
+    <div class="form-group-inline"><label>Phone</label><input id="pr-phone" value="${sanitize(me.phone||'')}"></div>
+    <div class="form-group-inline"><label>Address</label><textarea id="pr-addr">${sanitize(me.address||'')}</textarea></div>
+    <button class="btn btn-primary mt-1" onclick="saveStudentProfile()">💾 Save Changes</button>
+  </div>`;
+}
+
+function saveStudentProfile() {
+  const me = DB.students.find(s=>s.id===session.id); if (!me) return;
+  me.phone = $('pr-phone').value.trim();
+  me.address = $('pr-addr').value.trim();
+  saveDB();
+  toast('Profile updated!', 'success');
+}
+
+function studentAttendance() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const subjectMap = { 'dept1':['c1','c2'],'dept2':['c5','c6'],'dept3':['c7','c8'],
+    'dept4':['c9','c10'],'dept5':['c12','c13'],'dept6':['c14','c15'],'dept7':['c16','c17'],'dept8':['c18','c19'] };
+  const subjects = (subjectMap[me.dept]||[]).map(id=>({id,...getCourseById(id)}));
+  const attData = DB.attendance[me.id]||{};
+
+  // Subject-wise
+  const rows = subjects.map(subj => {
+    const rec = attData[subj.id]||{};
+    const total = Object.keys(rec).length;
+    const present = Object.values(rec).filter(v=>v==='P').length;
+    const pct = total ? Math.round(present/total*100) : 0;
+    return { subj, total, present, absent: total-present, pct };
+  });
+
+  mc.innerHTML = `
+  <h2 class="section-title">✅ My Attendance</h2>
+  <div class="card">
+    <div class="card-title">Subject-wise Attendance</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Subject</th><th>Total Classes</th><th>Present</th><th>Absent</th><th>Percentage</th></tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td>${sanitize(r.subj.name)}</td>
+        <td>${r.total}</td>
+        <td>${r.present}</td>
+        <td>${r.absent}</td>
+        <td>
+          <span style="font-weight:700;color:${r.pct<75?'var(--danger)':r.pct<85?'var(--warning)':'var(--success)'}">${r.pct}%</span>
+          <div class="progress-wrap"><div class="progress-bar ${r.pct<75?'bad':r.pct<85?'warn':'good'}" style="width:${r.pct}%"></div></div>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 Monthly Calendar View</div>
+    <div class="toolbar" style="margin-bottom:12px">
+      <select class="filter-select" id="cal-subj">
+        ${subjects.map(s=>`<option value="${s.id}">${sanitize(s.name)}</option>`).join('')}
+      </select>
+      <button class="btn btn-outline" onclick="renderAttCalendar()">View</button>
+    </div>
+    <div id="att-calendar"></div>
+  </div>`;
+  renderAttCalendar();
+  $('cal-subj').onchange = renderAttCalendar;
+}
+
+function renderAttCalendar() {
+  const me = getMyStudent();
+  const subj = $('cal-subj').value;
+  const rec = (DB.attendance[me.id]||{})[subj]||{};
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const todayStr = today();
+
+  let html = `<div class="cal-header">
+    <span style="font-weight:700">${monthNames[month]} ${year}</span>
+    <span style="font-size:12px;color:var(--text-muted)">
+      <span style="display:inline-block;width:12px;height:12px;background:#c8e6c9;border-radius:2px"></span> Present &nbsp;
+      <span style="display:inline-block;width:12px;height:12px;background:#ffcdd2;border-radius:2px"></span> Absent
+    </span>
+  </div>
+  <div class="cal-grid">
+    ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-day-name">${d}</div>`).join('')}
+    ${Array(firstDay).fill('<div></div>').join('')}`;
+
+  for (let d=1; d<=daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow = new Date(year,month,d).getDay();
+    const isWeekend = dow===0||dow===6;
+    const val = rec[dateStr];
+    let cls = 'cal-day';
+    if (isWeekend) cls += ' weekend';
+    else if (val==='P') cls += ' present';
+    else if (val==='A') cls += ' absent';
+    if (dateStr===todayStr) cls += ' today';
+    html += `<div class="${cls}" title="${dateStr}">${d}</div>`;
+  }
+  html += '</div>';
+  $('att-calendar').innerHTML = html;
+}
+
+function studentMarks() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const subjectMap = { 'dept1':['c1','c2'],'dept2':['c5','c6'],'dept3':['c7','c8'],
+    'dept4':['c9','c10'],'dept5':['c12','c13'],'dept6':['c14','c15'],'dept7':['c16','c17'],'dept8':['c18','c19'] };
+  const subjects = (subjectMap[me.dept]||[]).map(id=>({id,...getCourseById(id)}));
+  const marksData = DB.marks[me.id]||{};
+  const exams = ['Internal 1','Internal 2','Model','Semester'];
+
+  mc.innerHTML = `
+  <h2 class="section-title">📊 Marks & Results</h2>
+  <div class="card">
+    <div class="card-title">Exam Results</div>
+    ${exams.map(exam => {
+      const hasData = subjects.some(s => marksData[s.id]&&marksData[s.id][exam]!==undefined);
+      if (!hasData) return '';
+      let total=0, max=0;
+      const rows = subjects.map(s => {
+        const m = marksData[s.id]&&marksData[s.id][exam]!==undefined ? marksData[s.id][exam] : null;
+        if (m!==null) { total+=m; max+=50; }
+        const g = m!==null ? grade(m,50) : '—';
+        return { s, m, g };
+      }).filter(r=>r.m!==null);
+      const pct = max ? Math.round(total/max*100) : 0;
+      const overallGrade = max ? grade(total, max) : '—';
+      return `
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;color:var(--primary);font-size:15px;margin-bottom:10px">📝 ${exam}</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Subject</th><th>Marks (/50)</th><th>Grade</th><th>Result</th></tr></thead>
+          <tbody>${rows.map(r=>`<tr>
+            <td>${sanitize(r.s.name)}</td>
+            <td>${r.m}</td>
+            <td><span class="badge ${r.g==='U'?'badge-danger':r.g==='O'||r.g==='A+'?'badge-success':'badge-info'}">${r.g}</span></td>
+            <td>${passFail(r.g)}</td>
+          </tr>`).join('')}</tbody>
+          <tfoot><tr style="background:var(--bg)">
+            <td><strong>Total</strong></td>
+            <td><strong>${total}/${max}</strong></td>
+            <td><strong>${pct}%</strong></td>
+            <td><span class="badge ${overallGrade==='U'?'badge-danger':'badge-success'}">${overallGrade}</span></td>
+          </tr></tfoot>
+        </table></div>
+      </div>`;
+    }).join('') || '<div class="empty-state">No marks published yet.</div>'}
+  </div>`;
+}
+
+function studentTimetable() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const tt = DB.timetable[me.dept]||[];
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+  const slots = ['9:00–10:00','10:00–11:00','11:00–12:00','12:00–1:00','2:00–3:00','3:00–4:00'];
+
+  mc.innerHTML = `
+  <h2 class="section-title">📅 My Timetable</h2>
+  <div class="card">
+    <div class="card-title">${sanitize(getDeptName(me.dept))} – Weekly Schedule</div>
+    <div class="tt-grid">
+      <div class="tt-head">Time</div>
+      ${days.map(d=>`<div class="tt-head">${d}</div>`).join('')}
+      ${slots.map(sl=>`
+        <div class="tt-time">${sl}</div>
+        ${days.map(day=>{
+          const e = tt.find(x=>x.day===day&&x.slot===sl);
+          return e
+            ? `<div class="tt-cell filled"><div class="tt-subj">${sanitize(getCourseById(e.subject).code)}</div><div class="tt-staff">${sanitize(getStaffById(e.staff).name.split(' ').pop())}</div></div>`
+            : `<div class="tt-cell">–</div>`;
+        }).join('')}`).join('')}
+    </div>
+  </div>`;
+}
+
+function studentFees() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const due = me.fee - me.paid;
+  mc.innerHTML = `
+  <h2 class="section-title">💳 Fee Details</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value">₹${(me.fee||0).toLocaleString()}</div><div class="stat-label">Total Fee</div></div>
+    <div class="stat-card success"><div class="stat-icon">✅</div><div class="stat-value">₹${(me.paid||0).toLocaleString()}</div><div class="stat-label">Amount Paid</div></div>
+    <div class="stat-card ${due>0?'warning':'success'}"><div class="stat-icon">⏳</div><div class="stat-value">₹${due.toLocaleString()}</div><div class="stat-label">Amount Due</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Fee Breakdown</div>
+    <div class="receipt">
+      <div class="receipt-header">
+        <div style="font-size:18px;font-weight:800">CSI Ewart WCC</div>
+        <div style="font-size:12px;color:var(--text-muted)">Fee Statement – Academic Year 2025-26</div>
+      </div>
+      <div class="receipt-row"><span>Student Name</span><span>${sanitize(me.name)}</span></div>
+      <div class="receipt-row"><span>Register No.</span><span>${sanitize(me.reg)}</span></div>
+      <div class="receipt-row"><span>Department</span><span>${sanitize(getDeptName(me.dept))}</span></div>
+      <div class="receipt-row"><span>Year</span><span>Year ${me.year}</span></div>
+      <div class="receipt-row"><span>Tuition Fee</span><span>₹${Math.round((me.fee||0)*0.7).toLocaleString()}</span></div>
+      <div class="receipt-row"><span>Library Fee</span><span>₹${Math.round((me.fee||0)*0.05).toLocaleString()}</span></div>
+      <div class="receipt-row"><span>Lab Fee</span><span>₹${Math.round((me.fee||0)*0.15).toLocaleString()}</span></div>
+      <div class="receipt-row"><span>Sports Fee</span><span>₹${Math.round((me.fee||0)*0.05).toLocaleString()}</span></div>
+      <div class="receipt-row"><span>Miscellaneous</span><span>₹${Math.round((me.fee||0)*0.05).toLocaleString()}</span></div>
+      <div class="receipt-row receipt-total"><span>Total Fee</span><span>₹${(me.fee||0).toLocaleString()}</span></div>
+      <div class="receipt-row" style="color:var(--success)"><span>Amount Paid</span><span>₹${(me.paid||0).toLocaleString()}</span></div>
+      <div class="receipt-row" style="color:${due>0?'var(--danger)':'var(--success)'}"><span><strong>Balance Due</strong></span><span><strong>₹${due.toLocaleString()}</strong></span></div>
+    </div>
+    ${due===0?'<div class="info-box" style="margin-top:14px">✅ Your fee is fully paid. Thank you!</div>':
+      `<div class="warning-box" style="margin-top:14px">⚠️ Please pay the pending fee of ₹${due.toLocaleString()} at the college office.</div>`}
+  </div>`;
+}
+
+function studentMaterials() {
+  const mc = $('main-content');
+  const me = getMyStudent();
+  const subjectMap = { 'dept1':['c1','c2'],'dept2':['c5','c6'],'dept3':['c7','c8'],
+    'dept4':['c9','c10'],'dept5':['c12','c13'],'dept6':['c14','c15'],'dept7':['c16','c17'],'dept8':['c18','c19'] };
+  const mySubs = subjectMap[me.dept]||[];
+  const mats = DB.materials.filter(m=>mySubs.includes(m.subject));
+  mc.innerHTML = `
+  <h2 class="section-title">📚 Study Materials</h2>
+  <div class="card">
+    ${mats.length ? mats.map(m=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <strong>${sanitize(m.title)}</strong>
+        <span class="badge badge-info" style="margin-left:6px">${sanitize(getCourseById(m.subject).name)}</span>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Posted: ${formatDate(m.date)} by ${sanitize(getStaffById(m.staff).name)}</div>
+        <a href="${sanitize(m.link)}" target="_blank" style="font-size:13px;margin-top:4px;display:inline-block">🔗 Access Material</a>
+      </div>`).join('') : '<div class="empty-state">No study materials available yet.</div>'}
+  </div>`;
+}
+
+function studentAnnouncements() {
+  const mc = $('main-content');
+  const anns = DB.announcements.filter(a=>a.audience==='All'||a.audience==='Students');
+  mc.innerHTML = `
+  <h2 class="section-title">📢 Announcements</h2>
+  <div class="card">
+    ${anns.length ? anns.map(a=>`
+      <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+        <strong style="font-size:15px">${sanitize(a.title)}</strong>
+        <div style="font-size:12px;color:var(--text-muted);margin:4px 0">${formatDate(a.date)}</div>
+        <div style="font-size:13px;line-height:1.6">${sanitize(a.message)}</div>
+      </div>`).join('') : '<div class="empty-state">No announcements.</div>'}
+  </div>`;
+}
+
+function studentChangePassword() {
+  const mc = $('main-content');
+  mc.innerHTML = `
+  <h2 class="section-title">🔒 Change Password</h2>
+  <div class="card" style="max-width:420px">
+    <div class="form-group-inline"><label>Current Password</label><input type="password" id="cp-old" placeholder="Current password"></div>
+    <div class="form-group-inline"><label>New Password</label><input type="password" id="cp-new" placeholder="New password (min 6 chars)"></div>
+    <div class="form-group-inline"><label>Confirm New Password</label><input type="password" id="cp-confirm" placeholder="Repeat new password"></div>
+    <button class="btn btn-primary mt-1" onclick="changePassword()">🔒 Update Password</button>
+  </div>`;
+}
+
+// ============================================================
+// SECTION 8: INIT & EVENT LISTENERS
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  // Load or seed DB
+  if (!loadDB() || !DB.seeded) seedData();
+
+  // Auth session restore
+  initAuth();
+  if (session) {
+    showApp();
+  }
+
+  // Login form events
+  // Role tabs
+  $all('.role-tab').forEach(tab => {
+    tab.onclick = () => {
+      $all('.role-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+    };
+  });
+
+  // Password toggle
+  $('pw-toggle-btn').onclick = () => {
+    const inp = $('login-pw');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    $('pw-toggle-btn').textContent = inp.type === 'password' ? '👁️' : '🙈';
+  };
+
+  // Login form submit
+  $('login-form').onsubmit = e => {
+    e.preventDefault();
+    const id = $('login-id').value.trim();
+    const pw = $('login-pw').value;
+    const role = $q('.role-tab.active').dataset.role;
+    const err = $('login-error');
+    err.textContent = '';
+    if (!id || !pw) { err.textContent = 'Please enter your ID and password.'; return; }
+    const result = login(id, pw, role);
+    if (!result.ok) { err.textContent = result.msg; return; }
+    currentPage = 'dashboard';
+    showApp();
+  };
+
+  // Forgot password
+  $('forgot-pw-link').onclick = e => {
+    e.preventDefault();
+    openModal('Forgot Password', `
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:40px;margin-bottom:12px">🔑</div>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.7">
+          Please contact the <strong>College Administrator</strong> to reset your password.<br><br>
+          📞 Admin Office: <strong>044-2345-6789</strong><br>
+          📧 Email: <strong>admin@cewcc.edu</strong>
+        </p>
+      </div>
+    `);
+  };
+
+  // Demo creds toggle
+  $('demo-toggle').onclick = () => {
+    const body = $('demo-body');
+    const arrow = $('demo-arrow');
+    body.classList.toggle('open');
+    arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+  };
+
+  // Logout
+  $('logout-btn').onclick = () => {
+    if (confirm('Are you sure you want to logout?')) logout();
+  };
+
+  // Sidebar toggle (mobile)
+  $('sidebar-toggle').onclick = () => {
+    $('sidebar').classList.toggle('open');
+    $('sidebar-overlay').classList.toggle('open');
+  };
+  $('sidebar-overlay').onclick = () => {
+    $('sidebar').classList.remove('open');
+    $('sidebar-overlay').classList.remove('open');
+  };
+
+  // Theme toggle
+  let darkMode = false;
+  try { darkMode = localStorage.getItem('cewcc_theme') === 'dark'; } catch(e) {}
+  if (darkMode) { document.documentElement.setAttribute('data-theme','dark'); $('theme-toggle').textContent = '☀️'; }
+
+  $('theme-toggle').onclick = () => {
+    darkMode = !darkMode;
+    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : '');
+    $('theme-toggle').textContent = darkMode ? '☀️' : '🌙';
+    try { localStorage.setItem('cewcc_theme', darkMode ? 'dark' : 'light'); } catch(e) {}
+  };
+});
+</script>
+</body>
+</html>
